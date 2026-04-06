@@ -1,6 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import LoginPage from '../components/LoginPage';
-import Layout from '../components/Layout';
 import UsersPage from '../components/UsersPage';
 
 
@@ -14,7 +13,6 @@ const ProtectedRoute = () => {
   return <Outlet />;
 };
 
-
 export const routes = [
   {
     path: '/login',
@@ -25,37 +23,24 @@ export const routes = [
     element: <ProtectedRoute />,
     children: [
       {
-        element: <Layout />,
-        children: [
-          {
-            path: '/users',
-            element: <UsersPage />,         
-          },
-          {
-            path: '/events',
-            element: (
-              <div style={{ padding: '40px' }}>
-                Страница Ивенты 
-              </div>
-            ),
-          },
-          {
-            path: '/managers',
-            element: (
-              <div style={{ padding: '40px' }}>
-                Страница Менеджеры 
-              </div>
-            ),
-          },
-          {
-            path: '/settings',
-            element: (
-              <div style={{ padding: '40px' }}>
-                Страница Настройки
-              </div>
-            ),
-          },
-        ],
+        path: '/users',
+        element: <UsersPage />,
+      },
+      {
+        path: '/events',
+        element: <div style={{ padding: '40px' }}>Страница Ивенты</div>,
+      },
+      {
+        path: '/managers',
+        element: <div style={{ padding: '40px' }}>Страница Менеджеры</div>,
+      },
+      {
+        path: '/settings',
+        element: <div style={{ padding: '40px' }}>Страница Настройки</div>,
+      },
+      {
+        path: '/',                   
+        element: <Navigate to="/users" replace />,
       },
     ],
   },

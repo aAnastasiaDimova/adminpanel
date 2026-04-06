@@ -1,23 +1,23 @@
+// UsersPage.tsx (updated with dynamic state and modal integration)
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 
 import SearchIconSrc from "../assets/search.svg";
 import PlusIconSrc from "../assets/plus.svg";
+import FiltersIcon from '../assets/filter.svg';
 
-import {
-  FilterIcon,
-  UsersIcon,
-  EventsIcon,
-  ManagersIcon,
-  SettingsIcon,
-} from '../assets/icons';
+import BottomNav from './BottomNav';
+import FilterModal from './FilterModal';
+import AddStudentModal, { type NewStudent } from './AddStudentModal';
+
 
 const PageContainer = styled.div`
   margin: 0 auto;
   background: #ffffff;
   border-radius: 16px;
-  padding: 32px 139px;
+  padding: 32px 15% 0px 15%;
   font-family: Inter;
+  min-height: 100vh;
 `;
 
 const Header = styled.h1`
@@ -40,7 +40,8 @@ const SearchWrapper = styled.div`
 
 const SearchInput = styled.input`
   width: 90%;
-  padding: 11px 16px 10px 48px;
+  height: 40px;
+  padding: 0 16px 0 48px;
   border: 1px solid #AAD3FF;
   border-radius: 10px;
   font-size: 14px;
@@ -56,9 +57,9 @@ const SearchIconWrapper = styled.div`
 `;
 
 const FilterButton = styled.button`
-  width: 48px;
-  height: 48px;
-  background: #007aff;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(to bottom, #1E7EE8, #3a55dd);
   border: none;
   border-radius: 12px;
   display: flex;
@@ -68,37 +69,19 @@ const FilterButton = styled.button`
 `;
 
 const AddButton = styled.button`
-  height: 48px;
-  background: #007aff;
+  height: 40px;
+  background: linear-gradient(135deg, #7086F3, #1E7EE8);
   color: white;
   border: none;
-  border-radius: 9999px;
-  padding: 0 24px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
 `;
-
-const ChevronButton = styled.button`
-  width: 48px;
-  height: 48px;
-  background: #007aff;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
-`;
-
-const ChevronLeft = () => <ChevronButton>&lt;</ChevronButton>;
-const ChevronRight = () => <ChevronButton>&gt;</ChevronButton>;
 
 const TableWrapper = styled.div`
   border: 1px solid #aad3ff;
@@ -118,12 +101,16 @@ const Th = styled.th`
   font-weight: 500;
   font-size: 14px;
   text-align: left;
-  padding: 16px 20px;
+  padding: 16px 16px;
   border-bottom: 1px solid #aad3ff;
 `;
 
+const Th1 = styled(Th)`
+  text-align: center;
+`;
+
 const Td = styled.td`
-  padding: 16px 20px;
+  padding: 16px 16px;
   border-bottom: 1px solid #aad3ff;
   color: #111827;
   font-size: 15px;
@@ -139,15 +126,22 @@ const BadgeContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
 `;
 
 const Badge = styled.span`
-  background: #f1f5f9;
+  background: #e4e4e97e;
   color: #111827;
   font-size: 13px;
-  padding: 4px 10px;
+  padding: 10px 10px;
+  margin: -10px 0px;
+  box-sizing: border-box;
   border-radius: 9999px;
   white-space: nowrap;
+  font-weight: 600;
+  border-radius: 8px;
 `;
 
 const GroupText = styled.div`
@@ -155,7 +149,7 @@ const GroupText = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   color: #111827;
-  font-size: 15px;
+  font-size: 14px;
 `;
 
 const GroupWord = styled.span`
@@ -176,43 +170,35 @@ const Dot = styled.div<{ active?: boolean }>`
   background: ${(props) => (props.active ? '#007aff' : '#d1d5db')};
 `;
 
-const Bottom = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 40px;
-`;
 
-const BottomNav = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  background: #007aff;
-  border-radius: 9999px;
-  width: 50%;
-  max-width: 520px;
-`;
-
-const NavItem = styled.button<{ active: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 99px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  background: ${(props) => (props.active ? '#ffffff' : '#007AFF')};
-  color: ${(props) => (props.active ? '#007AFF' : '#ffffff')};
-  min-width: ${(props) => (props.active ? '160px' : '52px')};
-`;
-
-const tableData = [
+const initialTableData = [
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
+  { fio: 'Сигидин Тимур Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
+  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
   { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
   { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
   { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
@@ -224,8 +210,34 @@ const tableData = [
   { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
 ];
 
+const ITEMS_PER_PAGE = 10;
+
 const UsersPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'users' | 'events' | 'managers' | 'settings'>('users');
+  const [students, setStudents] = useState(initialTableData);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const totalPages = Math.ceil(students.length / ITEMS_PER_PAGE);
+  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const currentData = students.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleAddStudent = (newStudent: NewStudent) => {
+    const newRow = {
+      fio: newStudent.fio,
+      project: newStudent.project,
+      badges: newStudent.badges,
+      group: newStudent.group,
+    };
+    setStudents((prev) => [newRow, ...prev]);
+    setCurrentPage(0);
+  };
 
   return (
     <PageContainer>
@@ -239,11 +251,11 @@ const UsersPage: React.FC = () => {
           <SearchInput placeholder="Поиск" />
         </SearchWrapper>
 
-        <FilterButton>
-          <FilterIcon />
+        <FilterButton onClick={() => setIsFilterOpen(true)}>
+          <img src={FiltersIcon} alt="filters" width={20} height={20} />
         </FilterButton>
 
-        <AddButton>
+        <AddButton onClick={() => setIsAddModalOpen(true)}>
           <img src={PlusIconSrc} alt="add" width={20} height={20} />
           Добавить пользователя
         </AddButton>
@@ -255,18 +267,20 @@ const UsersPage: React.FC = () => {
             <tr>
               <Th>ФИО</Th>
               <Th>Проект</Th>
-              <Th>Направление, курс</Th>
+              <Th1>Направление, курс</Th1>
               <Th>Группа</Th>
             </tr>
           </thead>
           <tbody>
-            {tableData.map((row, index) => (
+            {currentData.map((row, index) => (
               <Tr key={index}>
                 <Td>{row.fio}</Td>
                 <Td>{row.project}</Td>
                 <Td>
                   <BadgeContainer>
-                    {row.badges.map((b, i) => <Badge key={i}>{b}</Badge>)}
+                    {row.badges.map((b, i) => (
+                      <Badge key={i}>{b}</Badge>
+                    ))}
                   </BadgeContainer>
                 </Td>
                 <Td>
@@ -283,31 +297,27 @@ const UsersPage: React.FC = () => {
       </TableWrapper>
 
       <Pagination>
-        <Dot active /><Dot /><Dot /><Dot /><Dot />
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <Dot key={i} active={i === currentPage} />
+        ))}
       </Pagination>
 
-      <Bottom>
-        <BottomNav>
-          <NavItem active={activeTab === 'users'} onClick={() => setActiveTab('users')}>
-            <UsersIcon />
-            {activeTab === 'users' && <span>Пользователи</span>}
-          </NavItem>
-          <NavItem active={activeTab === 'events'} onClick={() => setActiveTab('events')}>
-            <EventsIcon />
-            {activeTab === 'events' && <span>Ивенты</span>}
-          </NavItem>
-          <NavItem active={activeTab === 'managers'} onClick={() => setActiveTab('managers')}>
-            <ManagersIcon />
-            {activeTab === 'managers' && <span>Менеджеры</span>}
-          </NavItem>
-          <NavItem active={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>
-            <SettingsIcon />
-            {activeTab === 'settings' && <span>Настройки</span>}
-          </NavItem>
-        </BottomNav>
-        <ChevronLeft />
-        <ChevronRight />
-      </Bottom>
+      <FilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+      />
+
+      <BottomNav
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+
+      <AddStudentModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddStudent={handleAddStudent}
+      />
     </PageContainer>
   );
 };
