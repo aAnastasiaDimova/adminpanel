@@ -1,0 +1,52 @@
+import styled from "@emotion/styled";
+
+export const Bottom = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  width: 100%;
+  bottom: 20px;
+  gap: 12px;
+`;
+
+export const BottomNav = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #007aff;
+  border-radius: 9999px;
+  max-width: 520px;
+`;
+
+export const NavItem = styled.button<{ active: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 99px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: ${(props) => (props.active ? "#ffffff" : "#007AFF")};
+  color: ${(props) => (props.active ? "#007AFF" : "#ffffff")};
+  min-width: ${(props) => (props.active ? "160px" : "52px")};
+`;
+export const ChevronButton = styled.button`
+  width: 48px;
+  height: 48px;
+  background: #007aff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+`;
