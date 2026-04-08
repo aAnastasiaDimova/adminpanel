@@ -1,8 +1,6 @@
-// AddStudentModal.tsx
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 
-// Иконки и изображения
 import ArrowBackIcon from "../assets/arrow-back.svg";
 import PencilIcon from "../assets/pencil.svg";
 import DeleteIcon from "../assets/delete.svg";
@@ -19,13 +17,13 @@ const Overlay = styled.div`
   background-color: white;
   overflow-y: auto;
   font-family: Inter, sans-serif;
+  
 `;
 
 const ModalContainer = styled.div`
   background: #ffffff;
-  width: 100%;
-  margin: 0 15%;
-  max-width: calc(100% - 30%);
+  width: 60%;
+  margin: 0 auto; 
   padding: 24px 24px 32px;
   box-sizing: border-box;
 `;
@@ -73,12 +71,16 @@ const ActionIconButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  background: linear-gradient(to bottom, #1E7EE8, #3a55dd);
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 10px;
 `;
+const ActionIconButton2 = styled(ActionIconButton)`
+ background: linear-gradient(to bottom, #DC8234 0%, #D65A30 17%, #D03635 65%, #BA2E32 100%);
 
+`;
 const AvatarWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -124,7 +126,7 @@ const FieldLabel = styled.label<{ isFocused?: boolean }>`
   transform: translateY(-50%);
   background: #ffffff;
   padding: 0 6px;
-  color: ${(p) => (p.isFocused ? "#007AFF" : "#78797E")};
+  color: ${(p) => (p.isFocused ? "#007AFF" : "#A2ACB0")};
   font-size: 13px;
   font-weight: 500;
   pointer-events: none;
@@ -147,7 +149,7 @@ const Input = styled.input<{ isFocused?: boolean }>`
     outline: none;
   }
   &::placeholder {
-    color: #a1a1aa;
+    color: #A2ACB0;
   }
 `;
 
@@ -160,7 +162,7 @@ const Select = styled.select<{ isFocused?: boolean }>`
   color: #09090b;
   font-size: 15px;
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378797E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378797E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 16px;
@@ -256,7 +258,7 @@ const TagsBox = styled.div<{ isFocused?: boolean }>`
 const TechTag = styled.span`
   padding: 6px 12px;
   background: transparent;
-  border: 1.5px solid #78797e;
+  border: 1.5px solid #A2ACB0;
   border-radius: 8px;
   font-size: 15px;
   color: #09090b;
@@ -268,7 +270,7 @@ const TechTag = styled.span`
 const RemoveTag = styled.button`
   background: none;
   border: none;
-  color: #78797e;
+  color: #A2ACB0;
   font-size: 18px;
   cursor: pointer;
   padding: 0 2px;
@@ -293,7 +295,7 @@ const TechInput = styled.input<{ isFocused?: boolean }>`
     outline: none;
   }
   &::placeholder {
-    color: #78797e;
+    color: #A2ACB0;
   }
 `;
 
@@ -309,13 +311,12 @@ const CancelButton = styled.button`
   color: #e53935b2;
   border: none;
   border-radius: 12px;
-  padding: 11px 32px;
+  padding: 12px 145px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
-  &:hover {
-    opacity: 0.8;
-  }
+   line-height: 28px;
+
 `;
 
 const SaveButton = styled.button`
@@ -323,16 +324,14 @@ const SaveButton = styled.button`
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 11px 32px;
+   padding: 12px 145px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  &:hover {
-    opacity: 0.9;
-  }
+  line-height: 28px;
+
 `;
 
 export interface NewStudent {
@@ -447,17 +446,17 @@ const AddStudentModal: React.FC<Props> = ({
         <ModalHeader>
           <HeaderLeft>
             <BackButton onClick={onClose}>
-              <img src={ArrowBackIcon} alt="back" width={24} height={24} />
+              <img src={ArrowBackIcon} alt="назад" width={24} height={24} />
             </BackButton>
             <Title>Пользователь</Title>
           </HeaderLeft>
           <HeaderActions>
             <ActionIconButton>
-              <img src={PencilIcon} alt="edit" width={24} height={24} />
+              <img src={PencilIcon} alt="редактировать" width={16} height={16} />
             </ActionIconButton>
-            <ActionIconButton>
-              <img src={DeleteIcon} alt="delete" width={24} height={24} />
-            </ActionIconButton>
+            <ActionIconButton2>
+              <img src={DeleteIcon} alt="удалить" width={16} height={16} />
+            </ActionIconButton2>
           </HeaderActions>
         </ModalHeader>
 
@@ -710,7 +709,7 @@ const AddStudentModal: React.FC<Props> = ({
         <ModalFooter>
           <CancelButton onClick={onClose}>Отменить</CancelButton>
           <SaveButton onClick={handleSave}>
-            <img src={PlusIconSrc} alt="plus" width={18} height={18} />
+            <img src={PlusIconSrc}  width={16} height={16} style={{ marginRight: '6px' }}/>
             Сохранить
           </SaveButton>
         </ModalFooter>

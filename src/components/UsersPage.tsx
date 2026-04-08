@@ -1,4 +1,3 @@
-// UsersPage.tsx (updated with dynamic state and modal integration)
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 
@@ -9,7 +8,7 @@ import FiltersIcon from '../assets/filter.svg';
 import BottomNav from './BottomNav';
 import FilterModal from './FilterModal';
 import AddStudentModal, { type NewStudent } from './AddStudentModal';
-
+import StudentModal, { type Student } from './StudentModal';
 
 const PageContainer = styled.div`
   margin: 0 auto;
@@ -169,8 +168,6 @@ const Dot = styled.div<{ active?: boolean }>`
   border-radius: 50%;
   background: ${(props) => (props.active ? '#007aff' : '#d1d5db')};
 `;
-
-
 const initialTableData = [
   { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
   { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
@@ -217,6 +214,10 @@ const UsersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
+
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   const totalPages = Math.ceil(students.length / ITEMS_PER_PAGE);
   const startIndex = currentPage * ITEMS_PER_PAGE;
@@ -227,6 +228,53 @@ const UsersPage: React.FC = () => {
       setCurrentPage(newPage);
     }
   };
+
+
+  const openStudentModal = (row: any) => {
+    const fullStudent: Student = {
+      fio: row.fio,
+      project: row.project,
+      badges: row.badges,
+      group: row.group,
+      directionTags: row.badges.map((b: string) => b.split(" ")[0]),
+      course: row.badges.length > 0 
+        ? `${row.badges[0].split(" ")[1]} курс` 
+        : "2 курс",
+      age: "20",
+      website: "sigidingo",
+      username: "sigidingo",
+      email: "sigidingo@gmail.com",
+      phone: "89619710510",
+      about: "Привет! Меня зовут Ярослав, и я увлекаюсь программированием и путешествиями. В свободное время люблю читать книги и изучать новые языки. Мечтаю посетить Японию и попробовать настоящие суши!",
+      techStack: ["React", "Python", "RestApi", "Tilda", "Paskal"],
+    };
+    setSelectedStudent(fullStudent);
+    setIsStudentModalOpen(true);
+  };
+
+
+  const handleSaveStudent = (updated: Student) => {
+    setStudents((prev) =>
+      prev.map((s) =>
+        s.fio === updated.fio
+          ? { 
+              fio: updated.fio, 
+              project: updated.project, 
+              badges: updated.badges || updated.directionTags.map(dir => `${dir} ${updated.course.split(" ")[0]}`),
+              group: updated.group 
+            }
+          : s
+      )
+    );
+    setSelectedStudent(updated);
+  };
+
+
+  const handleDeleteStudent = (fio: string) => {
+    setStudents((prev) => prev.filter((s) => s.fio !== fio));
+    setIsStudentModalOpen(false);
+  };
+
 
   const handleAddStudent = (newStudent: NewStudent) => {
     const newRow = {
@@ -273,7 +321,11 @@ const UsersPage: React.FC = () => {
           </thead>
           <tbody>
             {currentData.map((row, index) => (
-              <Tr key={index}>
+              <Tr 
+                key={index} 
+                onClick={() => openStudentModal(row)}
+                style={{ cursor: 'pointer' }}
+              >
                 <Td>{row.fio}</Td>
                 <Td>{row.project}</Td>
                 <Td>
@@ -312,6 +364,16 @@ const UsersPage: React.FC = () => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
+
+
+      <StudentModal
+        isOpen={isStudentModalOpen}
+        onClose={() => setIsStudentModalOpen(false)}
+        student={selectedStudent}
+        onSave={handleSaveStudent}
+        onDelete={handleDeleteStudent}
+      />
+
 
       <AddStudentModal
         isOpen={isAddModalOpen}
