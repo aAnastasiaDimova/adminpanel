@@ -1,86 +1,10 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
+import React from "react";
+import styled from "@emotion/styled";
 
-import SearchIconSrc from "../assets/search.svg";
-import PlusIconSrc from "../assets/plus.svg";
-import FiltersIcon from '../assets/filter.svg';
-
-import BottomNav from './BottomNav';
-import FilterModal from './FilterModal';
-import AddStudentModal, { type NewStudent } from './AddStudentModal';
-import StudentModal, { type Student } from './StudentModal';
-
-const PageContainer = styled.div`
-  margin: 0 auto;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 32px 15% 0px 15%;
-  font-family: Inter;
-  min-height: 100vh;
-`;
-
-const Header = styled.h1`
-  font-size: 28px;
-  font-weight: 600;
-  color: #09090B;
-`;
-
-const Controls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-`;
-
-const SearchWrapper = styled.div`
-  position: relative;
-  flex: 1;
-`;
-
-const SearchInput = styled.input`
-  width: 90%;
-  height: 40px;
-  padding: 0 16px 0 48px;
-  border: 1px solid #AAD3FF;
-  border-radius: 10px;
-  font-size: 14px;
-  outline: none;
-  &::placeholder { color: #71717A; }
-`;
-
-const SearchIconWrapper = styled.div`
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-`;
-
-const FilterButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(to bottom, #1E7EE8, #3a55dd);
-  border: none;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-`;
-
-const AddButton = styled.button`
-  height: 40px;
-  background: linear-gradient(135deg, #7086F3, #1E7EE8);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 0 16px;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-`;
+import { tableData } from "../hooks/mock.userdata";
+import { HeaderPage } from "./HeaderPage";
+import { PageContainer } from "../styles/global";
+import { Pagination } from "./pagination";
 
 const TableWrapper = styled.div`
   border: 1px solid #aad3ff;
@@ -337,7 +261,7 @@ const UsersPage: React.FC = () => {
                 </Td>
                 <Td>
                   <GroupText>
-                    {row.group.split(' ').map((word, i) => (
+                    {row.group.split(" ").map((word, i) => (
                       <GroupWord key={i}>{word}</GroupWord>
                     ))}
                   </GroupText>

@@ -1,12 +1,20 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import LoginPage from '../components/LoginPage';
-import UsersPage from '../components/UsersPage';
+import { Navigate, Outlet } from "react-router-dom";
+import LoginPage from "../components/LoginPage";
+import { Layout } from "../components/Layout";
+import UsersPage from "../components/UsersPage";
+import { useStore } from "../store/storeProvider";
+import { useUser } from "../hooks/account/useUser";
+import { Loader } from "../components/loader";
+import AllEvents from "../components/AllEvents";
 
-
+// eslint-disable-next-line react-refresh/only-export-components
 const ProtectedRoute = () => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const { managerStore } = useStore();
+  const { isLoading } = useUser();
 
-  if (!isAuthenticated) {
+  if (isLoading) return <Loader />;
+
+  if (!managerStore.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -15,7 +23,7 @@ const ProtectedRoute = () => {
 
 export const routes = [
   {
-    path: '/login',
+    path: "/login",
     element: <LoginPage />,
   },
 
@@ -23,30 +31,35 @@ export const routes = [
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/users',
-        element: <UsersPage />,
-      },
-      {
-        path: '/events',
-        element: <div style={{ padding: '40px' }}>Страница Ивенты</div>,
-      },
-      {
-        path: '/managers',
-        element: <div style={{ padding: '40px' }}>Страница Менеджеры</div>,
-      },
-      {
-        path: '/settings',
-        element: <div style={{ padding: '40px' }}>Страница Настройки</div>,
-      },
-      {
-        path: '/',                   
-        element: <Navigate to="/users" replace />,
+        element: <Layout />,
+        children: [
+          {
+            path: "/users",
+            element: <UsersPage />,
+          },
+          {
+            path: "/events",
+            element: <AllEvents />,
+          },
+          {
+            path: "/events/:id",
+            element: <div style={{ padding: "40px" }}>Редактровать ивент</div>,
+          },
+          {
+            path: "/managers",
+            element: <div style={{ padding: "40px" }}>Страница Менеджеры</div>,
+          },
+          {
+            path: "/settings",
+            element: <div style={{ padding: "40px" }}>Страница Настройки</div>,
+          },
+        ],
       },
     ],
   },
 
   {
-    path: '*',
+    path: "*",
     element: <Navigate to="/login" replace />,
   },
 ];
