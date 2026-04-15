@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 
-import { tableData } from "../hooks/mock.userdata";
-import { HeaderPage } from "./HeaderPage";
+// import { tableData } from "../hooks/mock.userdata";
+// import { HeaderPage } from "./HeaderPage";
 import { PageContainer } from "../styles/global";
-import { Pagination } from "./pagination";
-
+// import { Pagination } from "./pagination";
+import { Header, Controls, SearchWrapper, SearchIconWrapper, SearchInput, FilterButton, AddButton } from "../styles/styles.header";
+import AddStudentModal, { type NewStudent } from "./AddStudentModal";
+import BottomNav from "./BottomNav";
+import FilterModal from "./FilterModal";
+import StudentModal, { type Student } from "./StudentModal";
+import SearchIconSrc from "../assets/search.svg";
+import FiltersIcon from "../assets/filter.svg";
+import PlusIconSrc from "../assets/plus.svg";  
 const TableWrapper = styled.div`
   border: 1px solid #aad3ff;
   border-radius: 12px;
@@ -282,14 +289,6 @@ const UsersPage: React.FC = () => {
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
       />
-
-      <BottomNav
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
-
-
       <StudentModal
         isOpen={isStudentModalOpen}
         onClose={() => setIsStudentModalOpen(false)}
