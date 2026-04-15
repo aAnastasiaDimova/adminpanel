@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 
-import { tableData } from "../hooks/mock.userdata";
-import { HeaderPage } from "./HeaderPage";
+import { initialTableData } from "../hooks/mock.userdata";
 import { PageContainer } from "../styles/global";
-import { Pagination } from "./pagination";
+import AddStudentModal, { type NewStudent } from "./AddStudentModal";
+import StudentModal, { type Student } from "./StudentModal";
+import FilterModal from "./FilterModal";
+import { HeaderPage } from "./HeaderPage";
+// import { Pagination } from "./pagination";
 
 const TableWrapper = styled.div`
   border: 1px solid #aad3ff;
@@ -51,7 +54,6 @@ const BadgeContainer = styled.div`
   gap: 6px;
   justify-content: center;
   text-align: center;
-  box-sizing: border-box;
 `;
 
 const Badge = styled.span`
@@ -60,7 +62,6 @@ const Badge = styled.span`
   font-size: 13px;
   padding: 10px 10px;
   margin: -10px 0px;
-  box-sizing: border-box;
   border-radius: 9999px;
   white-space: nowrap;
   font-weight: 600;
@@ -90,46 +91,8 @@ const Dot = styled.div<{ active?: boolean }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: ${(props) => (props.active ? '#007aff' : '#d1d5db')};
+  background: ${(props) => (props.active ? "#007aff" : "#d1d5db")};
 `;
-const initialTableData = [
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Тимур Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'frontend 2', 'UX/UI 2'], group: 'пэз пд09 пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2'], group: 'пэз' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-  { fio: 'Сигидин Ярослав Тимурович', project: 'ПАЗЛ', badges: ['frontend 2', 'UX/UI 2'], group: 'пэз пд09' },
-];
 
 const ITEMS_PER_PAGE = 10;
 
@@ -138,7 +101,6 @@ const UsersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  
 
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -153,7 +115,6 @@ const UsersPage: React.FC = () => {
     }
   };
 
-
   const openStudentModal = (row: any) => {
     const fullStudent: Student = {
       fio: row.fio,
@@ -161,44 +122,47 @@ const UsersPage: React.FC = () => {
       badges: row.badges,
       group: row.group,
       directionTags: row.badges.map((b: string) => b.split(" ")[0]),
-      course: row.badges.length > 0 
-        ? `${row.badges[0].split(" ")[1]} курс` 
-        : "2 курс",
+      course:
+        row.badges.length > 0
+          ? `${row.badges[0].split(" ")[1]} курс`
+          : "2 курс",
       age: "20",
       website: "sigidingo",
       username: "sigidingo",
       email: "sigidingo@gmail.com",
       phone: "89619710510",
-      about: "Привет! Меня зовут Ярослав, и я увлекаюсь программированием и путешествиями. В свободное время люблю читать книги и изучать новые языки. Мечтаю посетить Японию и попробовать настоящие суши!",
+      about:
+        "Привет! Меня зовут Ярослав, и я увлекаюсь программированием и путешествиями. В свободное время люблю читать книги и изучать новые языки. Мечтаю посетить Японию и попробовать настоящие суши!",
       techStack: ["React", "Python", "RestApi", "Tilda", "Paskal"],
     };
     setSelectedStudent(fullStudent);
     setIsStudentModalOpen(true);
   };
 
-
   const handleSaveStudent = (updated: Student) => {
     setStudents((prev) =>
       prev.map((s) =>
         s.fio === updated.fio
-          ? { 
-              fio: updated.fio, 
-              project: updated.project, 
-              badges: updated.badges || updated.directionTags.map(dir => `${dir} ${updated.course.split(" ")[0]}`),
-              group: updated.group 
+          ? {
+              fio: updated.fio,
+              project: updated.project,
+              badges:
+                updated.badges ||
+                updated.directionTags.map(
+                  (dir) => `${dir} ${updated.course.split(" ")[0]}`,
+                ),
+              group: updated.group,
             }
-          : s
-      )
+          : s,
+      ),
     );
     setSelectedStudent(updated);
   };
-
 
   const handleDeleteStudent = (fio: string) => {
     setStudents((prev) => prev.filter((s) => s.fio !== fio));
     setIsStudentModalOpen(false);
   };
-
 
   const handleAddStudent = (newStudent: NewStudent) => {
     const newRow = {
@@ -213,25 +177,12 @@ const UsersPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <Header>Пользователи</Header>
-
-      <Controls>
-        <SearchWrapper>
-          <SearchIconWrapper>
-            <img src={SearchIconSrc} alt="search" width={20} height={20} />
-          </SearchIconWrapper>
-          <SearchInput placeholder="Поиск" />
-        </SearchWrapper>
-
-        <FilterButton onClick={() => setIsFilterOpen(true)}>
-          <img src={FiltersIcon} alt="filters" width={20} height={20} />
-        </FilterButton>
-
-        <AddButton onClick={() => setIsAddModalOpen(true)}>
-          <img src={PlusIconSrc} alt="add" width={20} height={20} />
-          Добавить пользователя
-        </AddButton>
-      </Controls>
+      <HeaderPage
+        title="Пользователи"
+        textButton="Добавить пользователя"
+        onClickFilter={() => setIsFilterOpen(true)}
+        onClickAddModal={() => setIsAddModalOpen(true)}
+      />
 
       <TableWrapper>
         <StyledTable>
@@ -245,10 +196,10 @@ const UsersPage: React.FC = () => {
           </thead>
           <tbody>
             {currentData.map((row, index) => (
-              <Tr 
-                key={index} 
+              <Tr
+                key={index}
                 onClick={() => openStudentModal(row)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 <Td>{row.fio}</Td>
                 <Td>{row.project}</Td>
@@ -283,12 +234,11 @@ const UsersPage: React.FC = () => {
         onClose={() => setIsFilterOpen(false)}
       />
 
-      <BottomNav
+      {/* <BottomNav
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-      />
-
+      /> */}
 
       <StudentModal
         isOpen={isStudentModalOpen}
@@ -297,7 +247,6 @@ const UsersPage: React.FC = () => {
         onSave={handleSaveStudent}
         onDelete={handleDeleteStudent}
       />
-
 
       <AddStudentModal
         isOpen={isAddModalOpen}

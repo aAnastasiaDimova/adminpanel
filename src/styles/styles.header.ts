@@ -20,7 +20,8 @@ export const SearchWrapper = styled.div`
 
 export const SearchInput = styled.input`
   width: 90%;
-  padding: 11px 16px 10px 48px;
+  height: 40px;
+  padding: 0 16px 0 48px;
   border: 1px solid #aad3ff;
   border-radius: 10px;
   font-size: 14px;
@@ -38,9 +39,9 @@ export const SearchIconWrapper = styled.div`
 `;
 
 export const FilterButton = styled.button`
-  width: 48px;
-  height: 48px;
-  background: #007aff;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(to bottom, #1e7ee8, #3a55dd);
   border: none;
   border-radius: 12px;
   display: flex;
@@ -50,14 +51,14 @@ export const FilterButton = styled.button`
 `;
 
 export const AddButton = styled.button`
-  height: 48px;
-  background: #007aff;
+  height: 40px;
+  background: linear-gradient(135deg, #7086f3, #1e7ee8);
   color: white;
   border: none;
-  border-radius: 9999px;
-  padding: 0 24px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 8px;

@@ -5,7 +5,8 @@ import UsersPage from "../components/UsersPage";
 import { useStore } from "../store/storeProvider";
 import { useUser } from "../hooks/account/useUser";
 import { Loader } from "../components/loader";
-import AllEvents from "../components/AllEvents";
+import AllEvents from "../components/events/AllEvents";
+import { FormEventPage } from "../components/events/eventForm/FormEventPage";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const ProtectedRoute = () => {
@@ -43,7 +44,11 @@ export const routes = [
           },
           {
             path: "/events/:id",
-            element: <div style={{ padding: "40px" }}>Редактровать ивент</div>,
+            element: <FormEventPage />,
+          },
+          {
+            path: "/events/create",
+            element: <FormEventPage />,
           },
           {
             path: "/managers",

@@ -9,4 +9,5 @@ export const avatarKeys = {
 export const eventsKeys = {
   all: ["events"] as const,
   myEvents: () => [...eventsKeys.all, "my"] as const,
+  byId: (id: string) => [...eventsKeys.all, "byId", id] as const,
 };

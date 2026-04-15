@@ -7,7 +7,6 @@ import DeleteIcon from "../assets/delete.svg";
 import PlusIconSrc from "../assets/plus.svg";
 import AvatarSrc from "../assets/Avatar.png";
 
-
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -17,15 +16,13 @@ const Overlay = styled.div`
   background-color: white;
   overflow-y: auto;
   font-family: Inter, sans-serif;
-  
 `;
 
 const ModalContainer = styled.div`
   background: #ffffff;
   width: 60%;
-  margin: 0 auto; 
+  margin: 0 auto;
   padding: 24px 24px 32px;
-  box-sizing: border-box;
 `;
 const ModalHeader = styled.div`
   display: flex;
@@ -71,15 +68,20 @@ const ActionIconButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  background: linear-gradient(to bottom, #1E7EE8, #3a55dd);
+  background: linear-gradient(to bottom, #1e7ee8, #3a55dd);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
 `;
 const ActionIconButton2 = styled(ActionIconButton)`
- background: linear-gradient(to bottom, #DC8234 0%, #D65A30 17%, #D03635 65%, #BA2E32 100%);
-
+  background: linear-gradient(
+    to bottom,
+    #dc8234 0%,
+    #d65a30 17%,
+    #d03635 65%,
+    #ba2e32 100%
+  );
 `;
 const AvatarWrapper = styled.div`
   display: flex;
@@ -142,14 +144,13 @@ const Input = styled.input<{ isFocused?: boolean }>`
   background: #ffffff;
   color: #09090b;
   font-size: 15px;
-  box-sizing: border-box;
   transition: none;
   &:focus {
     border: 2px solid #007aff;
     outline: none;
   }
   &::placeholder {
-    color: #A2ACB0;
+    color: #a2acb0;
   }
 `;
 
@@ -162,7 +163,7 @@ const Select = styled.select<{ isFocused?: boolean }>`
   color: #09090b;
   font-size: 15px;
   appearance: none;
-background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378797E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378797E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 16px;
@@ -224,7 +225,8 @@ const CheckboxItem = styled.label<{ checked: boolean }>`
   border-radius: 40px;
   font-size: 14px;
   cursor: pointer;
-  background: ${(p) => (p.checked ? "rgba(96, 165, 250, 0.12)" : "transparent")};
+  background: ${(p) =>
+    p.checked ? "rgba(96, 165, 250, 0.12)" : "transparent"};
   border: 1.5px solid ${(p) => (p.checked ? "#60a5fa" : "#78797e")};
   color: ${(p) => (p.checked ? "#60a5fa" : "#09090b")};
   input {
@@ -233,9 +235,7 @@ const CheckboxItem = styled.label<{ checked: boolean }>`
   }
   &:hover {
     background: ${(p) =>
-      p.checked
-        ? "rgba(96, 165, 250, 0.2)"
-        : "rgba(120, 121, 126, 0.08)"};
+      p.checked ? "rgba(96, 165, 250, 0.2)" : "rgba(120, 121, 126, 0.08)"};
   }
 `;
 
@@ -258,7 +258,7 @@ const TagsBox = styled.div<{ isFocused?: boolean }>`
 const TechTag = styled.span`
   padding: 6px 12px;
   background: transparent;
-  border: 1.5px solid #A2ACB0;
+  border: 1.5px solid #a2acb0;
   border-radius: 8px;
   font-size: 15px;
   color: #09090b;
@@ -270,7 +270,7 @@ const TechTag = styled.span`
 const RemoveTag = styled.button`
   background: none;
   border: none;
-  color: #A2ACB0;
+  color: #a2acb0;
   font-size: 18px;
   cursor: pointer;
   padding: 0 2px;
@@ -295,7 +295,7 @@ const TechInput = styled.input<{ isFocused?: boolean }>`
     outline: none;
   }
   &::placeholder {
-    color: #A2ACB0;
+    color: #a2acb0;
   }
 `;
 
@@ -315,8 +315,7 @@ const CancelButton = styled.button`
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
-   line-height: 28px;
-
+  line-height: 28px;
 `;
 
 const SaveButton = styled.button`
@@ -324,14 +323,13 @@ const SaveButton = styled.button`
   color: white;
   border: none;
   border-radius: 12px;
-   padding: 12px 145px;
+  padding: 12px 145px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   line-height: 28px;
-
 `;
 
 export interface NewStudent {
@@ -452,7 +450,12 @@ const AddStudentModal: React.FC<Props> = ({
           </HeaderLeft>
           <HeaderActions>
             <ActionIconButton>
-              <img src={PencilIcon} alt="редактировать" width={16} height={16} />
+              <img
+                src={PencilIcon}
+                alt="редактировать"
+                width={16}
+                height={16}
+              />
             </ActionIconButton>
             <ActionIconButton2>
               <img src={DeleteIcon} alt="удалить" width={16} height={16} />
@@ -504,7 +507,7 @@ const AddStudentModal: React.FC<Props> = ({
                               setDirectionTags((prev) => [...prev, dir]);
                             } else {
                               setDirectionTags((prev) =>
-                                prev.filter((d) => d !== dir)
+                                prev.filter((d) => d !== dir),
                               );
                             }
                           }}
@@ -520,7 +523,9 @@ const AddStudentModal: React.FC<Props> = ({
 
           <Grid>
             <Field>
-              <FieldLabel isFocused={focusedField === "age"}>Возраст</FieldLabel>
+              <FieldLabel isFocused={focusedField === "age"}>
+                Возраст
+              </FieldLabel>
               <Input
                 type="number"
                 min={14}
@@ -540,7 +545,9 @@ const AddStudentModal: React.FC<Props> = ({
             </Field>
 
             <Field>
-              <FieldLabel isFocused={focusedField === "course"}>Курс</FieldLabel>
+              <FieldLabel isFocused={focusedField === "course"}>
+                Курс
+              </FieldLabel>
               <Select
                 value={course}
                 onChange={(e) => setCourse(e.target.value)}
@@ -709,7 +716,12 @@ const AddStudentModal: React.FC<Props> = ({
         <ModalFooter>
           <CancelButton onClick={onClose}>Отменить</CancelButton>
           <SaveButton onClick={handleSave}>
-            <img src={PlusIconSrc}  width={16} height={16} style={{ marginRight: '6px' }}/>
+            <img
+              src={PlusIconSrc}
+              width={16}
+              height={16}
+              style={{ marginRight: "6px" }}
+            />
             Сохранить
           </SaveButton>
         </ModalFooter>

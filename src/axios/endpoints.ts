@@ -13,10 +13,10 @@ export const CHANGE_AVATAR = "/Account/change-avatar";
 export const GET_AVATAR = "/Account/get-avatar";
 export const DELETE_AVATAR = "/Account/delete-avatar";
 
-export const GET_EVENT = "/events/get-event/";
+export const GET_EVENT = "/events/get-event";
 export const GET_EVENTS = "/events/get-events";
 export const CREATE_EVENT = "/events/create-event";
-export const DELETE_EVENT = "/events/delete-event/";
+export const DELETE_EVENT = "/events/delete-event";
 export const UPDATE_EVENT = "/events/update-event";
 export const GET_USER_EVENTS = "/events/get-user-events/";
 

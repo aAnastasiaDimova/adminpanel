@@ -6,9 +6,16 @@ import PlusIconSrc from "../assets/plus.svg";
 interface HeaderProps {
   title: string;
   textButton: string;
+  onClickFilter: () => void;
+  onClickAddModal: () => void;
 }
 
-export const HeaderPage = ({ title, textButton }: HeaderProps) => {
+export const HeaderPage = ({
+  title,
+  textButton,
+  onClickFilter,
+  onClickAddModal,
+}: HeaderProps) => {
   return (
     <>
       <S.Header>{title}</S.Header>
@@ -20,11 +27,11 @@ export const HeaderPage = ({ title, textButton }: HeaderProps) => {
           <S.SearchInput placeholder="Поиск" />
         </S.SearchWrapper>
 
-        <S.FilterButton>
+        <S.FilterButton onClick={() => onClickFilter()}>
           <FilterIcon />
         </S.FilterButton>
 
-        <S.AddButton>
+        <S.AddButton onClick={() => onClickAddModal()}>
           <img src={PlusIconSrc} alt="add" width={20} height={20} />
           {textButton}
         </S.AddButton>

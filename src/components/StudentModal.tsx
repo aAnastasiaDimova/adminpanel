@@ -21,14 +21,16 @@ const Overlay = styled.div`
 const ModalContainer = styled.div`
   background: #ffffff;
   width: 60%;
-  margin: 0 auto; 
+  margin: 0 auto;
   padding: 24px 24px 32px;
-  box-sizing: border-box;
 `;
 
 const ConfirmOverlay = styled.div`
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(255, 255, 255, 0.5);
   z-index: 1100;
   display: flex;
@@ -40,7 +42,7 @@ const ConfirmDialog = styled.div`
   background: white;
   border-radius: 16px;
   padding: 32px 40px;
-  width: 380px;
+  width: 460px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   text-align: center;
 `;
@@ -70,7 +72,7 @@ const ConfirmDeleteBtn = styled.button`
 `;
 
 const ConfirmCancelBtn = styled.button`
-  background: linear-gradient(135deg, #7086F3, #1E7EE8);
+  background: linear-gradient(135deg, #7086f3, #1e7ee8);
   color: white;
   border: none;
   border-radius: 12px;
@@ -118,7 +120,7 @@ const HeaderActions = styled.div`
 const ActionIconButton = styled.button`
   width: 40px;
   height: 40px;
-  background: linear-gradient(to bottom, #1E7EE8, #3a55dd);
+  background: linear-gradient(to bottom, #1e7ee8, #3a55dd);
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -128,7 +130,13 @@ const ActionIconButton = styled.button`
 `;
 
 const ActionIconButton2 = styled(ActionIconButton)`
-  background: linear-gradient(to bottom, #DC8234 0%, #D65A30 17%, #D03635 65%, #BA2E32 100%);
+  background: linear-gradient(
+    to bottom,
+    #dc8234 0%,
+    #d65a30 17%,
+    #d03635 65%,
+    #ba2e32 100%
+  );
 `;
 
 const AvatarWrapper = styled.div`
@@ -150,9 +158,17 @@ const Form = styled.div`
   gap: 20px;
 `;
 
-const FullWidthField = styled.div` width: 100%; `;
-const Grid = styled.div` display: grid; grid-template-columns: 1fr 1fr; gap: 20px; `;
-const FullWidth = styled.div` grid-column: span 2; `;
+const FullWidthField = styled.div`
+  width: 100%;
+`;
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+`;
+const FullWidth = styled.div`
+  grid-column: span 2;
+`;
 
 const Field = styled.div`
   position: relative;
@@ -176,14 +192,21 @@ const FieldLabel = styled.label<{ isFocused?: boolean }>`
 const Input = styled.input<{ isFocused?: boolean; disabled?: boolean }>`
   width: 100%;
   padding: 16px;
-  border: ${(p) => (p.disabled ? "1px solid #A2ACB0" : p.isFocused ? "2px solid #007AFF" : "1px solid #A2ACB0")};
+  border: ${(p) =>
+    p.disabled
+      ? "1px solid #A2ACB0"
+      : p.isFocused
+        ? "2px solid #007AFF"
+        : "1px solid #A2ACB0"};
   border-radius: 10px;
   background: #ffffff; /* Белый фон всегда */
   color: #09090b;
   font-size: 15px;
-  box-sizing: border-box;
   cursor: ${(p) => (p.disabled ? "not-allowed" : "text")};
-  &:focus { outline: none; border: 2px solid #007aff; }
+  &:focus {
+    outline: none;
+    border: 2px solid #007aff;
+  }
 `;
 
 const Select = styled.select<{ disabled?: boolean }>`
@@ -239,7 +262,8 @@ const CheckboxItem = styled.label<{ checked: boolean; disabled?: boolean }>`
   border-radius: 40px;
   font-size: 14px;
   cursor: ${(p) => (p.disabled ? "not-allowed" : "pointer")};
-  background: ${(p) => (p.checked ? "rgba(96, 165, 250, 0.12)" : "transparent")};
+  background: ${(p) =>
+    p.checked ? "rgba(96, 165, 250, 0.12)" : "transparent"};
   border: 1.5px solid ${(p) => (p.checked ? "#60a5fa" : "#78797e")};
   color: ${(p) => (p.checked ? "#60a5fa" : "#09090b")};
 `;
@@ -423,7 +447,12 @@ const StudentModal: React.FC<Props> = ({
             {!isNew && mode === "view" && (
               <HeaderActions>
                 <ActionIconButton onClick={() => setMode("edit")}>
-                  <img src={PencilIcon} alt="редактировать" width={16} height={16} />
+                  <img
+                    src={PencilIcon}
+                    alt="редактировать"
+                    width={16}
+                    height={16}
+                  />
                 </ActionIconButton>
                 <ActionIconButton2 onClick={() => setShowDeleteConfirm(true)}>
                   <img src={DeleteIcon} alt="удалить" width={16} height={16} />
@@ -442,7 +471,9 @@ const StudentModal: React.FC<Props> = ({
                 <FieldLabel isFocused={focusedField === "fio"}>ФИО</FieldLabel>
                 <Input
                   value={formData.fio}
-                  onChange={(e) => setFormData({ ...formData, fio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fio: e.target.value })
+                  }
                   onFocus={() => setFocusedField("fio")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -478,11 +509,15 @@ const StudentModal: React.FC<Props> = ({
 
             <Grid>
               <Field>
-                <FieldLabel isFocused={focusedField === "age"}>Возраст</FieldLabel>
+                <FieldLabel isFocused={focusedField === "age"}>
+                  Возраст
+                </FieldLabel>
                 <Input
                   type="number"
                   value={formData.age}
-                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, age: e.target.value })
+                  }
                   onFocus={() => setFocusedField("age")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -493,7 +528,9 @@ const StudentModal: React.FC<Props> = ({
                 <FieldLabel>Курс</FieldLabel>
                 <Select
                   value={formData.course}
-                  onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, course: e.target.value })
+                  }
                   disabled={mode === "view"}
                 >
                   <option value="1 курс">1 курс</option>
@@ -504,10 +541,14 @@ const StudentModal: React.FC<Props> = ({
               </Field>
 
               <Field>
-                <FieldLabel isFocused={focusedField === "website"}>Ссылка на портфолио</FieldLabel>
+                <FieldLabel isFocused={focusedField === "website"}>
+                  Ссылка на портфолио
+                </FieldLabel>
                 <Input
                   value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, website: e.target.value })
+                  }
                   onFocus={() => setFocusedField("website")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -515,10 +556,14 @@ const StudentModal: React.FC<Props> = ({
               </Field>
 
               <Field>
-                <FieldLabel isFocused={focusedField === "username"}>Username</FieldLabel>
+                <FieldLabel isFocused={focusedField === "username"}>
+                  Username
+                </FieldLabel>
                 <Input
                   value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                   onFocus={() => setFocusedField("username")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -526,11 +571,15 @@ const StudentModal: React.FC<Props> = ({
               </Field>
 
               <Field>
-                <FieldLabel isFocused={focusedField === "email"}>Почта</FieldLabel>
+                <FieldLabel isFocused={focusedField === "email"}>
+                  Почта
+                </FieldLabel>
                 <Input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -538,10 +587,14 @@ const StudentModal: React.FC<Props> = ({
               </Field>
 
               <Field>
-                <FieldLabel isFocused={focusedField === "phone"}>Телефон</FieldLabel>
+                <FieldLabel isFocused={focusedField === "phone"}>
+                  Телефон
+                </FieldLabel>
                 <Input
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   onFocus={() => setFocusedField("phone")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -549,10 +602,14 @@ const StudentModal: React.FC<Props> = ({
               </Field>
 
               <Field>
-                <FieldLabel isFocused={focusedField === "project"}>Проект</FieldLabel>
+                <FieldLabel isFocused={focusedField === "project"}>
+                  Проект
+                </FieldLabel>
                 <Input
                   value={formData.project}
-                  onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, project: e.target.value })
+                  }
                   onFocus={() => setFocusedField("project")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -560,10 +617,14 @@ const StudentModal: React.FC<Props> = ({
               </Field>
 
               <Field>
-                <FieldLabel isFocused={focusedField === "group"}>Группа</FieldLabel>
+                <FieldLabel isFocused={focusedField === "group"}>
+                  Группа
+                </FieldLabel>
                 <Input
                   value={formData.group}
-                  onChange={(e) => setFormData({ ...formData, group: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, group: e.target.value })
+                  }
                   onFocus={() => setFocusedField("group")}
                   onBlur={() => setFocusedField(null)}
                   disabled={mode === "view"}
@@ -573,11 +634,15 @@ const StudentModal: React.FC<Props> = ({
 
             <FullWidth>
               <Field>
-                <FieldLabel isFocused={focusedField === "about"}>О себе</FieldLabel>
+                <FieldLabel isFocused={focusedField === "about"}>
+                  О себе
+                </FieldLabel>
                 <TextareaWrapper disabled={mode === "view"}>
                   <Textarea
                     value={formData.about}
-                    onChange={(e) => setFormData({ ...formData, about: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, about: e.target.value })
+                    }
                     disabled={mode === "view"}
                   />
                 </TextareaWrapper>
@@ -630,15 +695,20 @@ const StudentModal: React.FC<Props> = ({
           <ModalFooter>
             {mode === "edit" ? (
               <>
-                <CancelButton onClick={handleCancel}>Отменить изменения</CancelButton>
+                <CancelButton onClick={handleCancel}>
+                  Отменить изменения
+                </CancelButton>
                 <SaveButton onClick={handleSave}>
-                  <img src={PlusIconSrc} width={16} height={16} style={{ marginRight: "6px" }} />
+                  <img
+                    src={PlusIconSrc}
+                    width={16}
+                    height={16}
+                    style={{ marginRight: "6px" }}
+                  />
                   Сохранить
                 </SaveButton>
               </>
-            ) : ( 
-            null
-            )}
+            ) : null}
           </ModalFooter>
         </ModalContainer>
       </Overlay>
@@ -648,14 +718,12 @@ const StudentModal: React.FC<Props> = ({
           <ConfirmDialog onClick={(e) => e.stopPropagation()}>
             <ConfirmTitle>Удалить пользователя?</ConfirmTitle>
             <ConfirmButtons>
-            <ConfirmDeleteBtn onClick={() => onDelete?.(formData.fio)}>
+              <ConfirmDeleteBtn onClick={() => onDelete?.(formData.fio)}>
                 Да, удалить
               </ConfirmDeleteBtn>
               <ConfirmCancelBtn onClick={() => setShowDeleteConfirm(false)}>
                 Не удалять
               </ConfirmCancelBtn>
-
-
             </ConfirmButtons>
           </ConfirmDialog>
         </ConfirmOverlay>

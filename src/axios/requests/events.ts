@@ -1,11 +1,32 @@
-import type { EventItem } from "../../types/events";
+import type { EventItem, FormValues } from "../../types/events";
 import apiClient from "../axios";
-import { GET_EVENTS } from "../endpoints";
+import {
+  CREATE_EVENT,
+  DELETE_EVENT,
+  GET_EVENT,
+  GET_EVENTS,
+  UPDATE_EVENT,
+} from "../endpoints";
 
-////////// Взаимодействие с ивентами //////////
-
-// Получение всех ивентов
 export const getEvents = async (): Promise<EventItem[]> => {
   const response = await apiClient.get(GET_EVENTS);
   return response.data;
+};
+export const getEventsById = async (id: string): Promise<EventItem> => {
+  const response = await apiClient.get(`${GET_EVENT}/${id}`);
+  return response.data;
+};
+export const changeEventById = async (
+  id: string,
+  data: EventItem,
+): Promise<EventItem> => {
+  await apiClient.put(`${UPDATE_EVENT}/${id}`, data);
+  return data;
+};
+export const createEvent = async (data: FormValues): Promise<FormValues> => {
+  await apiClient.post(CREATE_EVENT, data);
+  return data;
+};
+export const deleteEventById = async (id: string): Promise<void> => {
+  await apiClient.delete(`${DELETE_EVENT}/${id}`);
 };

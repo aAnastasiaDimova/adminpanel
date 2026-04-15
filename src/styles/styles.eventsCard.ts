@@ -12,10 +12,20 @@ const gradientsByType: Record<string, string> = {
   Стажировка: "linear-gradient(180deg, #787878, #161616)",
   Вакансия: "linear-gradient(135deg, #87C0FF, #007AFF)",
 };
-
+export const EventsTimer = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 21;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: #d9ebfff2;
+  font-size: 16px;
+  font-weight: 600;
+`;
 export const EventCardContainer = styled.div`
-  min-width: 340px;
-  max-width: 358px;
+  min-width: 360px;
+  max-width: 368px;
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0px 32px 64px 0px #0000000a;
@@ -82,8 +92,13 @@ export const CompanyText = styled.div`
 `;
 
 export const DateText = styled.div`
-  font-size: 0.8rem;
-  color: #aaa;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #d9ebff;
+  width: max-content;
 `;
 
 export const TagsContainer = styled.div`
