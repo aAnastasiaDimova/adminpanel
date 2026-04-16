@@ -1,33 +1,48 @@
-export interface UserProfile {
-  portfolioLink: string;
-  patronymic: string;
-  surname: string;
-  userRole: number;
-  name: string;
-  telegramLink: string;
-  description: string;
+export type Direction = 0 | 1;
+export type Course = 1 | 2 | 3 | 4;
+export type UserRole = 0 | 1 | 2;
+
+export type UserDto = {
   id: string;
-  fullName: string;
-  age: number;
-  direction: number;
-  course?: string;
-  avatarUrl?: string;
-  website?: string;
   username: string;
   email: string;
-  phone?: string;
-  about?: string;
-  techStack?: string[];
-  birthDate?: string;
-  university?: string;
-  faculty?: string;
-  graduationYear?: number;
-  skills?: string[];
-  experience?: string;
-  location?: string;
-  socialLinks?: {
-    github?: string;
-    linkedin?: string;
-    telegram?: string;
-  };
-}
+  name: string;
+  surname: string;
+  patronymic?: string | null;
+  description?: string | null;
+  telegramLink: string;
+  portfolioLink: string;
+  isSubscribedToNotifications: boolean;
+  age?: number | null;
+  directions: Direction[];
+  course: Course;
+  skills: string[];
+  userRole: UserRole;
+  avatarUrl?: string | null;
+};
+
+export type UserTableRow = {
+  id: string;
+  fio: string;
+  username: string;
+  project: string;
+  badges: string[];
+};
+
+export type UserFormValues = {
+  username: string;
+  email: string;
+  name: string;
+  surname: string;
+  patronymic: string;
+  description: string;
+  telegramLink: string;
+  portfolioLink: string;
+  isSubscribedToNotifications: boolean;
+  age: number | null;
+  directions: (0 | 1)[];
+  course: 1 | 2 | 3 | 4;
+  skills: string[];
+  userRole: 0 | 1 | 2;
+  avatarUrl: string;
+};

@@ -1,3 +1,4 @@
+export const GET_ALL_USERS = "/Account/get-all-users";
 export const GET_USER = "/Account/get-user";
 export const DELETE_ACCOUNT = "/Account/delete-account";
 export const UPDATE_ACCOUNT = "/Account/update-account";
