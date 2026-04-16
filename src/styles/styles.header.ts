@@ -19,7 +19,7 @@ export const SearchWrapper = styled.div`
 `;
 
 export const SearchInput = styled.input`
-  width: 90%;
+  width: 100%;
   height: 40px;
   padding: 0 16px 0 48px;
   border: 1px solid #aad3ff;

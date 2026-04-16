@@ -24,8 +24,8 @@ export const changeEventById = async (
   return data;
 };
 export const createEvent = async (data: FormValues): Promise<FormValues> => {
-  await apiClient.post(CREATE_EVENT, data);
-  return data;
+  const response = await apiClient.post(CREATE_EVENT, data);
+  return response.data;
 };
 export const deleteEventById = async (id: string): Promise<void> => {
   await apiClient.delete(`${DELETE_EVENT}/${id}`);

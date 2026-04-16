@@ -25,7 +25,7 @@ const EventCard: React.FC<EventCardProps> = observer(
     return (
       <S.EventCardContainer onClick={() => navigate(`/events/${id}`)}>
         <S.EventsTimer>{timeRemaining}</S.EventsTimer>
-        <S.EventImage imageUrl={imageUrl} eventType={type} />
+        <S.EventImage imageUrl={imageUrl} eventType={type ? type : ""} />
         <S.EventInfo>
           <S.EventTitle>{title}</S.EventTitle>
           <S.DateText>{formatDate(startDate)}</S.DateText>

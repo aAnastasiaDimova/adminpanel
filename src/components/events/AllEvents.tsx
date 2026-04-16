@@ -64,7 +64,7 @@ const AllEvents = observer(() => {
         </TypesEvent>
       </TypeEventsContainer>
       <EventsContainer>
-        <EventSection events={events} />
+        <EventSection events={events ? events : []} />
       </EventsContainer>
       <Pagination />
 
