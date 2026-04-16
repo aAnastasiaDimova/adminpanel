@@ -1,14 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
 import { API } from "../../axios/index";
-import type { UserDto, UserFormValues } from "../../types/user";
-import { mapUserToTableRow } from "../../types/user.mappers";
+import type { UserDto, UserFormValues, UsersFilters } from "../../types/user";
+import { mapUserToTableRow, getMockProject } from "../../types/user.mappers";
 
 const ITEMS_PER_PAGE = 10;
+
+const defaultFilters: UsersFilters = {
+  projects: [],
+  courses: [],
+  directions: [],
+};
+
+const matchesFilters = (user: UserDto, filters: UsersFilters): boolean => {
+  const matchesProject =
+    filters.projects.length === 0 ||
+    filters.projects.includes(getMockProject(user));
+
+  const matchesCourse =
+    filters.courses.length === 0 || filters.courses.includes(user.course);
+
+  const matchesDirection =
+    filters.directions.length === 0 ||
+    user.directions.some((direction) => filters.directions.includes(direction));
+
+  return matchesProject && matchesCourse && matchesDirection;
+};
 
 export const useUsersPage = () => {
   const [users, setUsers] = useState<UserDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [filters, setFilters] = useState<UsersFilters>(defaultFilters);
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -50,7 +73,15 @@ export const useUsersPage = () => {
     [users, selectedUserId],
   );
 
-  const tableRows = useMemo(() => users.map(mapUserToTableRow), [users]);
+  const filteredUsers = useMemo(
+    () => users.filter((user) => matchesFilters(user, filters)),
+    [users, filters],
+  );
+
+  const tableRows = useMemo(
+    () => filteredUsers.map(mapUserToTableRow),
+    [filteredUsers],
+  );
 
   const totalPages = Math.ceil(tableRows.length / ITEMS_PER_PAGE);
   const startIndex = currentPage * ITEMS_PER_PAGE;
@@ -72,6 +103,11 @@ export const useUsersPage = () => {
   const openFilterModal = () => setIsFilterOpen(true);
   const closeFilterModal = () => setIsFilterOpen(false);
 
+  const applyFilters = (nextFilters: UsersFilters) => {
+    setFilters(nextFilters);
+    setCurrentPage(0);
+  };
+
   const handlePageChange = (page: number) => {
     if (page < 0 || page >= totalPages) {
       return;
@@ -83,7 +119,10 @@ export const useUsersPage = () => {
   const handleDeleteUser = (userId: string) => {
     setUsers((prev) => {
       const nextUsers = prev.filter((user) => user.id !== userId);
-      const nextTotalPages = Math.ceil(nextUsers.length / ITEMS_PER_PAGE);
+      const nextFiltered = nextUsers.filter((user) =>
+        matchesFilters(user, filters),
+      );
+      const nextTotalPages = Math.ceil(nextFiltered.length / ITEMS_PER_PAGE);
 
       if (currentPage >= nextTotalPages && currentPage > 0) {
         setCurrentPage(currentPage - 1);
@@ -133,6 +172,7 @@ export const useUsersPage = () => {
     selectedUser,
     isLoading,
     error,
+    filters,
 
     isFilterOpen,
     isAddModalOpen,
@@ -144,6 +184,7 @@ export const useUsersPage = () => {
     closeAddModal,
     openUserModal,
     closeUserModal,
+    applyFilters,
 
     handlePageChange,
     handleDeleteUser,

@@ -22,7 +22,8 @@ const UsersPage: React.FC = () => {
     isFilterOpen,
     isAddModalOpen,
     isUserModalOpen,
-
+    filters,
+    applyFilters,
     openFilterModal,
     closeFilterModal,
     openAddModal,
@@ -60,7 +61,12 @@ const UsersPage: React.FC = () => {
         </>
       )}
 
-      <FilterModal isOpen={isFilterOpen} onClose={closeFilterModal} />
+      <FilterModal
+        isOpen={isFilterOpen}
+        value={filters}
+        onClose={closeFilterModal}
+        onApply={applyFilters}
+      />
 
       {/* <UserModal
         isOpen={isUserModalOpen}

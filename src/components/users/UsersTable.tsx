@@ -3,7 +3,7 @@ import React from "react";
 import type { UserTableRow } from "../../types/user";
 
 import styled from "@emotion/styled";
-
+import OutsideLinkIcon from "../../assets/outside-link.svg";
 export const TableWrapper = styled.div`
   border: 1px solid #aad3ff;
   border-radius: 12px;
@@ -31,6 +31,7 @@ export const ThCenter = styled(Th)`
 `;
 
 export const Td = styled.td`
+  min-width: 300px;
   padding: 5px 16px;
   border-bottom: 1px solid #aad3ff;
   color: #111827;
@@ -38,8 +39,13 @@ export const Td = styled.td`
   vertical-align: middle;
 `;
 
-export const TdCenter = styled(Td)`
+export const TdCenter = styled.td`
   text-align: center;
+  padding: 5px 16px;
+  border-bottom: 1px solid #aad3ff;
+  color: #111827;
+  font-size: 15px;
+  vertical-align: middle;
 `;
 
 export const Tr = styled.tr`
@@ -65,15 +71,34 @@ export const Badge = styled.span`
   white-space: nowrap;
   font-weight: 600;
 `;
+
+export const LinkIconWrapper = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: 8px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #f2f2f3;
+  }
+
+  img {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+`;
 type UsersTableProps = {
   rows: UserTableRow[];
   onRowClick: (userId: string) => void;
 };
 
-export const UsersTable: React.FC<UsersTableProps> = ({
-  rows,
-  onRowClick,
-}) => {
+export const UsersTable: React.FC<UsersTableProps> = ({ rows, onRowClick }) => {
   return (
     <TableWrapper>
       <StyledTable>
@@ -83,6 +108,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
             <ThCenter>Username</ThCenter>
             <ThCenter>Проект</ThCenter>
             <ThCenter>Направление, курс</ThCenter>
+            <ThCenter>Telegram</ThCenter>
           </tr>
         </thead>
 
@@ -105,6 +131,21 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                     <Badge key={`${badge}-${index}`}>{badge}</Badge>
                   ))}
                 </BadgeContainer>
+              </TdCenter>
+
+              <TdCenter>
+                {row.telegramLink ? (
+                  <LinkIconWrapper
+                    href={row.telegramLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <img src={OutsideLinkIcon} alt="Открыть ссылку" />
+                  </LinkIconWrapper>
+                ) : (
+                  "—"
+                )}
               </TdCenter>
             </Tr>
           ))}

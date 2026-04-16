@@ -27,6 +27,8 @@ export type UserTableRow = {
   username: string;
   project: string;
   badges: string[];
+  age: number | null;
+  telegramLink: string;
 };
 
 export type UserFormValues = {
@@ -45,4 +47,10 @@ export type UserFormValues = {
   skills: string[];
   userRole: 0 | 1 | 2;
   avatarUrl: string;
+};
+
+export type UsersFilters = {
+  projects: string[];
+  courses: Course[];
+  directions: Direction[];
 };
