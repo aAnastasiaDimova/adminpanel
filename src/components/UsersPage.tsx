@@ -33,9 +33,9 @@ const UsersPage: React.FC = () => {
     closeUserModal,
 
     handlePageChange,
-    handleDeleteUser,
-    handleSaveUser,
-    handleAddUser,
+    // handleDeleteUser,
+    // handleSaveUser,
+    // handleAddUser,
   } = useUsersPage();
 
   return (

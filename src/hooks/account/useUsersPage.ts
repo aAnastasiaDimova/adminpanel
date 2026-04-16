@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { API } from "../../axios/index";
+import { useMemo, useState } from "react";
+import { useUsers } from "./useUsers";
 import type { UserDto, UserFormValues, UsersFilters } from "../../types/user";
-import { mapUserToTableRow, getMockProject } from "../../types/user.mappers";
+import { getMockProject, mapUserToTableRow } from "../../types/user.mappers";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -27,12 +27,18 @@ const matchesFilters = (user: UserDto, filters: UsersFilters): boolean => {
 };
 
 export const useUsersPage = () => {
-  const [users, setUsers] = useState<UserDto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: users = [], isLoading, error } = useUsers();
 
+  const errorMessage =
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+      ? error.message
+      : error
+        ? "Ошибка загрузки"
+        : null;
   const [filters, setFilters] = useState<UsersFilters>(defaultFilters);
-
   const [currentPage, setCurrentPage] = useState(0);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -40,33 +46,6 @@ export const useUsersPage = () => {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const data = await API.users.getAllUsers();
-        setUsers(data);
-      } catch (err) {
-        if (
-          typeof err === "object" &&
-          err !== null &&
-          "message" in err &&
-          typeof err.message === "string"
-        ) {
-          setError(err.message);
-        } else {
-          setError("Не удалось загрузить пользователей");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadUsers();
-  }, []);
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedUserId) ?? null,
@@ -116,54 +95,16 @@ export const useUsersPage = () => {
     setCurrentPage(page);
   };
 
-  const handleDeleteUser = (userId: string) => {
-    setUsers((prev) => {
-      const nextUsers = prev.filter((user) => user.id !== userId);
-      const nextFiltered = nextUsers.filter((user) =>
-        matchesFilters(user, filters),
-      );
-      const nextTotalPages = Math.ceil(nextFiltered.length / ITEMS_PER_PAGE);
+  // const handleDeleteUser = (userId: string) => {
+  //   closeUserModal();
+  // };
 
-      if (currentPage >= nextTotalPages && currentPage > 0) {
-        setCurrentPage(currentPage - 1);
-      }
+  // const handleSaveUser = (updatedUser: UserDto) => {
+  // };
 
-      return nextUsers;
-    });
-
-    closeUserModal();
-  };
-
-  const handleSaveUser = (updatedUser: UserDto) => {
-    setUsers((prev) =>
-      prev.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
-    );
-  };
-
-  const handleAddUser = (formValues: UserFormValues) => {
-    const newUser: UserDto = {
-      id: crypto.randomUUID(),
-      username: formValues.username,
-      email: formValues.email,
-      name: formValues.name,
-      surname: formValues.surname,
-      patronymic: formValues.patronymic || null,
-      description: formValues.description || null,
-      telegramLink: formValues.telegramLink,
-      portfolioLink: formValues.portfolioLink,
-      isSubscribedToNotifications: formValues.isSubscribedToNotifications,
-      age: formValues.age,
-      directions: formValues.directions,
-      course: formValues.course,
-      skills: formValues.skills,
-      userRole: formValues.userRole,
-      avatarUrl: formValues.avatarUrl || null,
-    };
-
-    setUsers((prev) => [newUser, ...prev]);
-    setCurrentPage(0);
-    closeAddModal();
-  };
+  // const handleAddUser = (formValues: UserFormValues) => {
+  //   closeAddModal();
+  // };
 
   return {
     currentRows,
@@ -171,7 +112,7 @@ export const useUsersPage = () => {
     currentPage,
     selectedUser,
     isLoading,
-    error,
+    error: errorMessage,
     filters,
 
     isFilterOpen,
@@ -187,8 +128,8 @@ export const useUsersPage = () => {
     applyFilters,
 
     handlePageChange,
-    handleDeleteUser,
-    handleSaveUser,
-    handleAddUser,
+    // handleDeleteUser,
+    // handleSaveUser,
+    // handleAddUser,
   };
 };

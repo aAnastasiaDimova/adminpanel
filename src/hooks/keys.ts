@@ -11,3 +11,6 @@ export const eventsKeys = {
   myEvents: () => [...eventsKeys.all, "my"] as const,
   byId: (id: string) => [...eventsKeys.all, "byId", id] as const,
 };
+export const usersKeys = {
+  all: ["users"] as const,
+};
