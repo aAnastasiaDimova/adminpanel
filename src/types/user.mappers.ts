@@ -1,5 +1,5 @@
 import { COURSE_LABELS, DIRECTION_LABELS } from "./user.constants";
-import type { UserDto, UserTableRow } from "./user";
+import type { UserDto, UserFormValues, UserTableRow } from "./user";
 
 export const getUserFio = (user: UserDto): string =>
   [user.surname, user.name, user.patronymic].filter(Boolean).join(" ");
@@ -29,3 +29,21 @@ export const mapUserToTableRow = (user: UserDto): UserTableRow => {
     telegramLink: user.telegramLink,
   };
 };
+
+export const mapUserToFormValues = (user: UserDto): UserFormValues => ({
+  username: user.username,
+  email: user.email,
+  name: user.name,
+  surname: user.surname,
+  patronymic: user.patronymic ?? "",
+  description: user.description ?? "",
+  telegramLink: user.telegramLink,
+  portfolioLink: user.portfolioLink,
+  isSubscribedToNotifications: user.isSubscribedToNotifications,
+  age: user.age ?? null,
+  directions: user.directions,
+  course: user.course,
+  skills: user.skills,
+  userRole: user.userRole,
+  avatarUrl: user.avatarUrl ?? "",
+});

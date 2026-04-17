@@ -21,10 +21,14 @@ const matchesFilters = (user: UserDto, filters: UsersFilters): boolean => {
 
   const matchesDirection =
     filters.directions.length === 0 ||
-    user.directions.some((direction) => filters.directions.includes(direction));
+    user.directions.some((direction) =>
+      filters.directions.includes(direction)
+    );
 
   return matchesProject && matchesCourse && matchesDirection;
 };
+
+type ModalMode = "create" | "details";
 
 export const useUsersPage = () => {
   const { data: users = [], isLoading, error } = useUsers();
@@ -36,48 +40,51 @@ export const useUsersPage = () => {
     typeof error.message === "string"
       ? error.message
       : error
-        ? "Ошибка загрузки"
-        : null;
+      ? "Ошибка загрузки"
+      : null;
+
   const [filters, setFilters] = useState<UsersFilters>(defaultFilters);
   const [currentPage, setCurrentPage] = useState(0);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-
+  const [modalMode, setModalMode] = useState<ModalMode>("create");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-
-  const selectedUser = useMemo(
-    () => users.find((user) => user.id === selectedUserId) ?? null,
-    [users, selectedUserId],
-  );
 
   const filteredUsers = useMemo(
     () => users.filter((user) => matchesFilters(user, filters)),
-    [users, filters],
+    [users, filters]
   );
 
   const tableRows = useMemo(
     () => filteredUsers.map(mapUserToTableRow),
-    [filteredUsers],
+    [filteredUsers]
   );
 
   const totalPages = Math.ceil(tableRows.length / ITEMS_PER_PAGE);
   const startIndex = currentPage * ITEMS_PER_PAGE;
-  const currentRows = tableRows.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentRows = tableRows.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
-  const openUserModal = (userId: string) => {
+  const openCreateModal = () => {
+    setModalMode("create");
+    setSelectedUserId(null);
+    setIsUserModalOpen(true);
+  };
+
+  const openDetailsModal = (userId: string) => {
+    setModalMode("details");
     setSelectedUserId(userId);
     setIsUserModalOpen(true);
   };
 
   const closeUserModal = () => {
-    setSelectedUserId(null);
     setIsUserModalOpen(false);
+    setSelectedUserId(null);
   };
-
-  const openAddModal = () => setIsAddModalOpen(true);
-  const closeAddModal = () => setIsAddModalOpen(false);
 
   const openFilterModal = () => setIsFilterOpen(true);
   const closeFilterModal = () => setIsFilterOpen(false);
@@ -88,48 +95,50 @@ export const useUsersPage = () => {
   };
 
   const handlePageChange = (page: number) => {
-    if (page < 0 || page >= totalPages) {
-      return;
-    }
-
+    if (page < 0 || page >= totalPages) return;
     setCurrentPage(page);
   };
 
-  // const handleDeleteUser = (userId: string) => {
-  //   closeUserModal();
-  // };
+  const handleCreateUser = async (data: UserFormValues) => {
+    console.log("create", data);
+    closeUserModal();
+  };
 
-  // const handleSaveUser = (updatedUser: UserDto) => {
-  // };
+  const handleUpdateUser = async (id: string, data: UserFormValues) => {
+    console.log("update", id, data);
+  };
 
-  // const handleAddUser = (formValues: UserFormValues) => {
-  //   closeAddModal();
-  // };
+  const handleDeleteUser = async (id: string) => {
+    console.log("delete", id);
+    closeUserModal();
+  };
 
   return {
     currentRows,
     totalPages,
     currentPage,
-    selectedUser,
+
     isLoading,
     error: errorMessage,
-    filters,
 
+    filters,
     isFilterOpen,
-    isAddModalOpen,
     isUserModalOpen,
+    modalMode,
+    selectedUserId,
 
     openFilterModal,
     closeFilterModal,
-    openAddModal,
-    closeAddModal,
-    openUserModal,
-    closeUserModal,
     applyFilters,
 
+    openCreateModal,
+    openDetailsModal,
+    closeUserModal,
+
     handlePageChange,
-    // handleDeleteUser,
-    // handleSaveUser,
-    // handleAddUser,
+
+    handleCreateUser,
+    handleUpdateUser,
+    handleDeleteUser,
   };
 };

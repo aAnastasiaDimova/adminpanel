@@ -1,11 +1,407 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { type UserFormValues } from "../types/user";
 import styled from "@emotion/styled";
-
 import ArrowBackIcon from "../assets/arrow-back.svg";
 import PencilIcon from "../assets/pencil.svg";
 import DeleteIcon from "../assets/delete.svg";
-import PlusIconSrc from "../assets/plus.svg";
-import AvatarSrc from "../assets/Avatar.png";
+import PlusIconSrc from "../assets/plus-icon.svg";
+
+import { useStudentModal } from "../hooks/account/useStudentModal";
+
+// import AvatarSrc from "../assets/Avatar.png";
+type ModalMode = "create" | "details";
+// type ViewMode = "view" | "edit";
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  mode: ModalMode;
+  studentId?: string | null;
+  onCreate?: (data: UserFormValues) => void | Promise<void>;
+  onUpdate?: (id: string, data: UserFormValues) => void | Promise<void>;
+  onDelete?: (id: string) => void | Promise<void>;
+}
+
+const directionOptions: { value: 0 | 1; label: string }[] = [
+  { value: 0, label: "Frontend" },
+  { value: 1, label: "UX/UI" },
+];
+
+const StudentModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  mode,
+  studentId,
+  onCreate,
+  onUpdate,
+  onDelete,
+}) => {
+  const {
+    formData,
+    isLoading,
+    error,
+    skillInput,
+    focusedField,
+    showDeleteConfirm,
+
+    isCreateMode,
+    isDetailsMode,
+    isEditMode,
+    isViewMode,
+
+    setSkillInput,
+    setFocusedField,
+    setShowDeleteConfirm,
+
+    updateField,
+    toggleDirection,
+    addSkill,
+    removeSkill,
+    handleStartEdit,
+    handleSave,
+    handleDelete,
+    handleCancel,
+  } = useStudentModal({
+    isOpen,
+    mode,
+    studentId,
+    onClose,
+    onCreate,
+    onUpdate,
+    onDelete,
+  });
+
+  const hasAvatar = Boolean(formData.avatarUrl);
+  const showPlus = isCreateMode && !hasAvatar;
+  const showFallback = !hasAvatar && !showPlus;
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <>
+      <Overlay>
+        <ModalContainer onClick={(e) => e.stopPropagation()}>
+          <ModalHeader>
+            <HeaderLeft>
+              <BackButton type="button" onClick={onClose}>
+                <img src={ArrowBackIcon} alt="назад" width={18} height={18} />
+              </BackButton>
+              <Title>
+                {isCreateMode ? "Новый пользователь" : "Пользователь"}
+              </Title>
+            </HeaderLeft>
+
+            {isDetailsMode && isViewMode && (
+              <HeaderActions>
+                <ActionIconButton type="button" onClick={handleStartEdit}>
+                  <img
+                    src={PencilIcon}
+                    alt="редактировать"
+                    width={16}
+                    height={16}
+                  />
+                </ActionIconButton>
+
+                <ActionIconButton2
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <img src={DeleteIcon} alt="удалить" width={16} height={16} />
+                </ActionIconButton2>
+              </HeaderActions>
+            )}
+          </ModalHeader>
+
+          <AvatarWrapper>
+            <AvatarContainer clickable={isEditMode}>
+              {hasAvatar && (
+                <AvatarImage src={formData.avatarUrl} alt="avatar" />
+              )}
+
+              {showPlus && <AvatarPlusIcon src={PlusIconSrc} alt="add" />}
+
+              {showFallback && (
+                <AvatarFallback>
+                  {formData.name?.[0]}
+                  {formData.surname?.[0]}
+                </AvatarFallback>
+              )}
+            </AvatarContainer>
+          </AvatarWrapper>
+
+          {isLoading && <div>Загрузка...</div>}
+          {!!error && <div>{error}</div>}
+
+          {!isLoading && (
+            <Form>
+              <FullWidthField>
+                <Field>
+                  <FieldLabel isFocused={focusedField === "fullName"}>
+                    ФИО
+                  </FieldLabel>
+                  <Input
+                    value={`${formData.surname} ${formData.name} ${formData.patronymic}`.trim()}
+                    onChange={(e) => {
+                      const parts = e.target.value.trim().split(/\s+/);
+                      updateField("surname", parts[0] ?? "");
+                      updateField("name", parts[1] ?? "");
+                      updateField("patronymic", parts[2] ?? "");
+                    }}
+                    onFocus={() => setFocusedField("fullName")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "fullName"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+              </FullWidthField>
+
+              <FullWidthField>
+                <Field>
+                  <FieldLabel isFocused={focusedField === "directions"}>
+                    Направление
+                  </FieldLabel>
+                  <CheckboxGroup disabled={isViewMode}>
+                    <CheckboxList>
+                      {directionOptions.map((direction) => (
+                        <CheckboxItem
+                          key={direction.value}
+                          checked={formData.directions.includes(
+                            direction.value,
+                          )}
+                          disabled={isViewMode}
+                          onClick={() => toggleDirection(direction.value)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.directions.includes(
+                              direction.value,
+                            )}
+                            readOnly
+                          />
+                          <span>{direction.label}</span>
+                        </CheckboxItem>
+                      ))}
+                    </CheckboxList>
+                  </CheckboxGroup>
+                </Field>
+              </FullWidthField>
+
+              <Grid>
+                <Field>
+                  <FieldLabel isFocused={focusedField === "age"}>
+                    Возраст
+                  </FieldLabel>
+                  <Input
+                    type="number"
+                    value={formData.age ?? ""}
+                    onChange={(e) =>
+                      updateField(
+                        "age",
+                        e.target.value === "" ? null : Number(e.target.value),
+                      )
+                    }
+                    onFocus={() => setFocusedField("age")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "age"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel isFocused={focusedField === "course"}>
+                    Курс
+                  </FieldLabel>
+                  <Select
+                    value={formData.course}
+                    onChange={(e) =>
+                      updateField(
+                        "course",
+                        Number(e.target.value) as 1 | 2 | 3 | 4,
+                      )
+                    }
+                    disabled={isViewMode}
+                  >
+                    <option value={1}>1 курс</option>
+                    <option value={2}>2 курс</option>
+                    <option value={3}>3 курс</option>
+                    <option value={4}>4 курс</option>
+                  </Select>
+                </Field>
+
+                <Field>
+                  <FieldLabel isFocused={focusedField === "portfolioLink"}>
+                    Ссылка на портфолио
+                  </FieldLabel>
+                  <Input
+                    value={formData.portfolioLink}
+                    onChange={(e) =>
+                      updateField("portfolioLink", e.target.value)
+                    }
+                    onFocus={() => setFocusedField("portfolioLink")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "portfolioLink"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel isFocused={focusedField === "username"}>
+                    Username
+                  </FieldLabel>
+                  <Input
+                    value={formData.username}
+                    onChange={(e) => updateField("username", e.target.value)}
+                    onFocus={() => setFocusedField("username")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "username"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel isFocused={focusedField === "email"}>
+                    Почта
+                  </FieldLabel>
+                  <Input
+                    value={formData.email}
+                    onChange={(e) => updateField("email", e.target.value)}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "email"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel isFocused={focusedField === "telegramLink"}>
+                    Телефон
+                  </FieldLabel>
+                  <Input
+                    value={formData.telegramLink}
+                    onChange={(e) =>
+                      updateField("telegramLink", e.target.value)
+                    }
+                    onFocus={() => setFocusedField("telegramLink")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "telegramLink"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+              </Grid>
+
+              <FullWidth>
+                <Field>
+                  <FieldLabel isFocused={focusedField === "description"}>
+                    О себе
+                  </FieldLabel>
+
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => updateField("description", e.target.value)}
+                    onFocus={() => setFocusedField("description")}
+                    onBlur={() => setFocusedField(null)}
+                    isFocused={focusedField === "description"}
+                    disabled={isViewMode}
+                    placeholder=" "
+                  />
+                </Field>
+              </FullWidth>
+
+              <FullWidth>
+                <Field>
+                  <FieldLabel>Стек технологий</FieldLabel>
+
+                  <TagsBox disabled={isViewMode}>
+                    {formData.skills.map((skill) => (
+                      <TechTag key={skill}>
+                        #{skill}
+                        {isEditMode && (
+                          <RemoveTag
+                            type="button"
+                            onClick={() => removeSkill(skill)}
+                          >
+                            ×
+                          </RemoveTag>
+                        )}
+                      </TechTag>
+                    ))}
+                  </TagsBox>
+                </Field>
+
+                {isEditMode && (
+                  <Field style={{ marginTop: "20px" }}>
+                    <FieldLabel isFocused={focusedField === "skillInput"}>
+                      Технология
+                    </FieldLabel>
+
+                    <Input
+                      value={skillInput}
+                      onChange={(e) => setSkillInput(e.target.value)}
+                      onFocus={() => setFocusedField("skillInput")}
+                      onBlur={() => setFocusedField(null)}
+                      isFocused={focusedField === "skillInput"}
+                      placeholder="Напишите технологию и нажмите Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addSkill();
+                        }
+                      }}
+                    />
+                  </Field>
+                )}
+              </FullWidth>
+
+              <ModalFooter>
+                {isEditMode && (
+                  <>
+                    <CancelButton type="button" onClick={handleCancel}>
+                      {isCreateMode ? "Отменить" : "Удалить изменения"}
+                    </CancelButton>
+
+                    <SaveButton type="button" onClick={handleSave}>
+                      Сохранить
+                    </SaveButton>
+                  </>
+                )}
+              </ModalFooter>
+            </Form>
+          )}
+        </ModalContainer>
+      </Overlay>
+
+      {showDeleteConfirm && (
+        <ConfirmOverlay onClick={() => setShowDeleteConfirm(false)}>
+          <ConfirmDialog onClick={(e) => e.stopPropagation()}>
+            <ConfirmTitle>Удалить пользователя?</ConfirmTitle>
+
+            <ConfirmButtons>
+              <ConfirmDeleteBtn type="button" onClick={handleDelete}>
+                Да, удалить
+              </ConfirmDeleteBtn>
+
+              <ConfirmCancelBtn
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Не удалять
+              </ConfirmCancelBtn>
+            </ConfirmButtons>
+          </ConfirmDialog>
+        </ConfirmOverlay>
+      )}
+    </>
+  );
+};
+
+export default StudentModal;
 
 const Overlay = styled.div`
   position: fixed;
@@ -144,14 +540,41 @@ const AvatarWrapper = styled.div`
   justify-content: center;
   margin-bottom: 32px;
 `;
-
-const Avatar = styled.img`
+const AvatarContainer = styled.div<{ clickable?: boolean }>`
   width: 150px;
   height: 150px;
   border-radius: 50%;
+  background: #eaf2ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  cursor: ${(p) => (p.clickable ? "pointer" : "default")};
+`;
+const AvatarImage = styled.img`
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 `;
+const AvatarPlusIcon = styled.img`
+  width: 28px;
+  height: 28px;
+`;
 
+const AvatarFallback = styled.div`
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #eaf2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #5085ff;
+`;
 const Form = styled.div`
   display: flex;
   flex-direction: column;
@@ -172,7 +595,6 @@ const FullWidth = styled.div`
 
 const Field = styled.div`
   position: relative;
-  margin-top: 12px;
 `;
 
 const FieldLabel = styled.label<{ isFocused?: boolean }>`
@@ -194,55 +616,73 @@ const Input = styled.input<{ isFocused?: boolean; disabled?: boolean }>`
   padding: 16px;
   border: ${(p) =>
     p.disabled
-      ? "1px solid #A2ACB0"
+      ? "1.5px solid #A2ACB0"
       : p.isFocused
-        ? "2px solid #007AFF"
-        : "1px solid #A2ACB0"};
-  border-radius: 10px;
-  background: #ffffff; /* Белый фон всегда */
+        ? "1.5px solid #007AFF"
+        : "1.5px solid #A2ACB0"};
+  border-radius: 14px;
+  background: #ffffff;
   color: #09090b;
   font-size: 15px;
   cursor: ${(p) => (p.disabled ? "not-allowed" : "text")};
+
+  &::placeholder {
+    color: #c4c9cc;
+  }
+
   &:focus {
     outline: none;
-    border: 2px solid #007aff;
+    border: 1.5px solid #007aff;
   }
 `;
 
 const Select = styled.select<{ disabled?: boolean }>`
   width: 100%;
   padding: 16px;
-  border: ${(p) => (p.disabled ? "1px solid #A2ACB0" : "1px solid #A2ACB0")};
-  border-radius: 10px;
+  border: ${(p) =>
+    p.disabled ? "1.5px solid #A2ACB0" : "1.5px solid #A2ACB0"};
+  border-radius: 14px;
   background: #ffffff;
   color: #09090b;
   font-size: 15px;
   cursor: ${(p) => (p.disabled ? "not-allowed" : "pointer")};
 `;
-
-const TextareaWrapper = styled.div<{ disabled?: boolean }>`
-  padding: 16px;
-  border: ${(p) => (p.disabled ? "1px solid #A2ACB0" : "1px solid #A2ACB0")};
-  border-radius: 10px;
-  background: #ffffff;
-`;
-
-const Textarea = styled.textarea<{ disabled?: boolean }>`
+const Textarea = styled.textarea<{ disabled?: boolean; isFocused?: boolean }>`
   width: 100%;
   min-height: 100px;
-  border: none;
-  outline: none;
-  resize: vertical;
-  background: transparent;
+  padding: 16px;
+
+  border: ${(p) =>
+    p.disabled
+      ? "1.5px solid #A2ACB0"
+      : p.isFocused
+        ? "1.5px solid #007AFF"
+        : "1.5px solid #A2ACB0"};
+
+  border-radius: 14px;
+  background: #ffffff;
+
   font-size: 15px;
   color: #09090b;
   font-family: inherit;
+
+  resize: vertical;
   cursor: ${(p) => (p.disabled ? "not-allowed" : "text")};
+
+  &::placeholder {
+    color: #a2acb0;
+  }
+
+  &:focus {
+    outline: none;
+    border: 1.5px solid #007aff;
+  }
 `;
 
 const CheckboxGroup = styled.div<{ disabled?: boolean }>`
-  border: ${(p) => (p.disabled ? "1px solid #A2ACB0" : "1px solid #A2ACB0")};
-  border-radius: 10px;
+  border: ${(p) =>
+    p.disabled ? "1.5px solid #A2ACB0" : "1.5px solid #A2ACB0"};
+  border-radius: 14px;
   padding: 16px;
   background: #ffffff;
 `;
@@ -269,8 +709,9 @@ const CheckboxItem = styled.label<{ checked: boolean; disabled?: boolean }>`
 `;
 
 const TagsBox = styled.div<{ disabled?: boolean }>`
-  border: ${(p) => (p.disabled ? "1px solid #A2ACB0" : "1px solid #A2ACB0")};
-  border-radius: 10px;
+  border: ${(p) =>
+    p.disabled ? "1.5px solid #A2ACB0" : "1.5px solid #A2ACB0"};
+  border-radius: 14px;
   padding: 12px;
   display: flex;
   flex-wrap: wrap;
@@ -306,430 +747,28 @@ const ModalFooter = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: 32px;
 `;
 
 const CancelButton = styled.button`
+  width: 100%;
   background: #e5393533;
   color: #e53935b2;
   border: none;
   border-radius: 12px;
-  padding: 12px 145px;
+  padding: 12px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
 `;
 
 const SaveButton = styled.button`
+  width: 100%;
   background: #007aff;
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 12px 145px;
+  padding: 12px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
 `;
-
-export interface Student {
-  fio: string;
-  directionTags: string[];
-  age: string;
-  course: string;
-  website: string;
-  username: string;
-  email: string;
-  phone: string;
-  about: string;
-  techStack: string[];
-  project: string;
-  group: string;
-  badges: string[];
-}
-
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  student?: Student | null;
-  onSave?: (updated: Student) => void;
-  onDelete?: (fio: string) => void;
-  isNew?: boolean;
-}
-
-const AVAILABLE_DIRECTIONS = ["Frontend", "Backend", "UX/UI"];
-
-const StudentModal: React.FC<Props> = ({
-  isOpen,
-  onClose,
-  student,
-  onSave,
-  onDelete,
-  isNew = false,
-}) => {
-  const [mode, setMode] = useState<"view" | "edit">("view");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-
-  const [formData, setFormData] = useState<Student>({
-    fio: "",
-    directionTags: ["Frontend"],
-    age: "",
-    course: "",
-    website: "",
-    username: "",
-    email: "",
-    phone: "",
-    about: "",
-    techStack: [],
-    project: "ПАЗЛ",
-    group: "",
-    badges: [],
-  });
-
-  useEffect(() => {
-    if (student) {
-      setFormData(student);
-      setMode("view");
-    } else if (isNew) {
-      setFormData({
-        fio: "",
-        directionTags: ["Frontend"],
-        age: "",
-        course: "2 курс",
-        website: "",
-        username: "",
-        email: "",
-        phone: "",
-        about: "",
-        techStack: [],
-        project: "ПАЗЛ",
-        group: "",
-        badges: [],
-      });
-      setMode("edit");
-    }
-  }, [student, isNew]);
-
-  const handleSave = () => {
-    onSave?.(formData);
-    setMode("view");
-  };
-
-  const handleCancel = () => {
-    if (student) setFormData(student);
-    setMode("view");
-  };
-
-  const toggleDirection = (dir: string) => {
-    if (mode === "view") return;
-    setFormData((prev) => ({
-      ...prev,
-      directionTags: prev.directionTags.includes(dir)
-        ? prev.directionTags.filter((d) => d !== dir)
-        : [...prev.directionTags, dir],
-    }));
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <>
-      <Overlay onClick={onClose}>
-        <ModalContainer onClick={(e) => e.stopPropagation()}>
-          <ModalHeader>
-            <HeaderLeft>
-              <BackButton onClick={onClose}>
-                <img src={ArrowBackIcon} alt="назад" width={24} height={24} />
-              </BackButton>
-              <Title>{isNew ? "Новый пользователь" : "Пользователь"}</Title>
-            </HeaderLeft>
-
-            {!isNew && mode === "view" && (
-              <HeaderActions>
-                <ActionIconButton onClick={() => setMode("edit")}>
-                  <img
-                    src={PencilIcon}
-                    alt="редактировать"
-                    width={16}
-                    height={16}
-                  />
-                </ActionIconButton>
-                <ActionIconButton2 onClick={() => setShowDeleteConfirm(true)}>
-                  <img src={DeleteIcon} alt="удалить" width={16} height={16} />
-                </ActionIconButton2>
-              </HeaderActions>
-            )}
-          </ModalHeader>
-
-          <AvatarWrapper>
-            <Avatar src={AvatarSrc} alt="avatar" />
-          </AvatarWrapper>
-
-          <Form>
-            <FullWidthField>
-              <Field>
-                <FieldLabel isFocused={focusedField === "fio"}>ФИО</FieldLabel>
-                <Input
-                  value={formData.fio}
-                  onChange={(e) =>
-                    setFormData({ ...formData, fio: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("fio")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                  placeholder=" "
-                />
-              </Field>
-            </FullWidthField>
-
-            <FullWidthField>
-              <Field>
-                <FieldLabel>Направление</FieldLabel>
-                <CheckboxGroup disabled={mode === "view"}>
-                  <CheckboxList>
-                    {AVAILABLE_DIRECTIONS.map((dir) => (
-                      <CheckboxItem
-                        key={dir}
-                        checked={formData.directionTags.includes(dir)}
-                        disabled={mode === "view"}
-                        onClick={() => toggleDirection(dir)}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.directionTags.includes(dir)}
-                          readOnly
-                        />
-                        <span>{dir}</span>
-                      </CheckboxItem>
-                    ))}
-                  </CheckboxList>
-                </CheckboxGroup>
-              </Field>
-            </FullWidthField>
-
-            <Grid>
-              <Field>
-                <FieldLabel isFocused={focusedField === "age"}>
-                  Возраст
-                </FieldLabel>
-                <Input
-                  type="number"
-                  value={formData.age}
-                  onChange={(e) =>
-                    setFormData({ ...formData, age: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("age")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel>Курс</FieldLabel>
-                <Select
-                  value={formData.course}
-                  onChange={(e) =>
-                    setFormData({ ...formData, course: e.target.value })
-                  }
-                  disabled={mode === "view"}
-                >
-                  <option value="1 курс">1 курс</option>
-                  <option value="2 курс">2 курс</option>
-                  <option value="3 курс">3 курс</option>
-                  <option value="4 курс">4 курс</option>
-                </Select>
-              </Field>
-
-              <Field>
-                <FieldLabel isFocused={focusedField === "website"}>
-                  Ссылка на портфолио
-                </FieldLabel>
-                <Input
-                  value={formData.website}
-                  onChange={(e) =>
-                    setFormData({ ...formData, website: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("website")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel isFocused={focusedField === "username"}>
-                  Username
-                </FieldLabel>
-                <Input
-                  value={formData.username}
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("username")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel isFocused={focusedField === "email"}>
-                  Почта
-                </FieldLabel>
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("email")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel isFocused={focusedField === "phone"}>
-                  Телефон
-                </FieldLabel>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("phone")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel isFocused={focusedField === "project"}>
-                  Проект
-                </FieldLabel>
-                <Input
-                  value={formData.project}
-                  onChange={(e) =>
-                    setFormData({ ...formData, project: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("project")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel isFocused={focusedField === "group"}>
-                  Группа
-                </FieldLabel>
-                <Input
-                  value={formData.group}
-                  onChange={(e) =>
-                    setFormData({ ...formData, group: e.target.value })
-                  }
-                  onFocus={() => setFocusedField("group")}
-                  onBlur={() => setFocusedField(null)}
-                  disabled={mode === "view"}
-                />
-              </Field>
-            </Grid>
-
-            <FullWidth>
-              <Field>
-                <FieldLabel isFocused={focusedField === "about"}>
-                  О себе
-                </FieldLabel>
-                <TextareaWrapper disabled={mode === "view"}>
-                  <Textarea
-                    value={formData.about}
-                    onChange={(e) =>
-                      setFormData({ ...formData, about: e.target.value })
-                    }
-                    disabled={mode === "view"}
-                  />
-                </TextareaWrapper>
-              </Field>
-            </FullWidth>
-
-            <FullWidth>
-              <Field>
-                <FieldLabel>Стек технологий</FieldLabel>
-                <TagsBox disabled={mode === "view"}>
-                  {formData.techStack.map((tag, i) => (
-                    <TechTag key={i}>
-                      #{tag}
-                      {mode === "edit" && (
-                        <RemoveTag
-                          onClick={() =>
-                            setFormData((p) => ({
-                              ...p,
-                              techStack: p.techStack.filter((t) => t !== tag),
-                            }))
-                          }
-                        >
-                          ×
-                        </RemoveTag>
-                      )}
-                    </TechTag>
-                  ))}
-                </TagsBox>
-                {mode === "edit" && (
-                  <Input
-                    placeholder="Напишите технологию и нажмите Enter"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                        const val = e.currentTarget.value.trim();
-                        if (!formData.techStack.includes(val)) {
-                          setFormData((p) => ({
-                            ...p,
-                            techStack: [...p.techStack, val],
-                          }));
-                        }
-                        e.currentTarget.value = "";
-                      }
-                    }}
-                  />
-                )}
-              </Field>
-            </FullWidth>
-          </Form>
-
-          <ModalFooter>
-            {mode === "edit" ? (
-              <>
-                <CancelButton onClick={handleCancel}>
-                  Отменить изменения
-                </CancelButton>
-                <SaveButton onClick={handleSave}>
-                  <img
-                    src={PlusIconSrc}
-                    width={16}
-                    height={16}
-                    style={{ marginRight: "6px" }}
-                  />
-                  Сохранить
-                </SaveButton>
-              </>
-            ) : null}
-          </ModalFooter>
-        </ModalContainer>
-      </Overlay>
-
-      {showDeleteConfirm && (
-        <ConfirmOverlay onClick={() => setShowDeleteConfirm(false)}>
-          <ConfirmDialog onClick={(e) => e.stopPropagation()}>
-            <ConfirmTitle>Удалить пользователя?</ConfirmTitle>
-            <ConfirmButtons>
-              <ConfirmDeleteBtn onClick={() => onDelete?.(formData.fio)}>
-                Да, удалить
-              </ConfirmDeleteBtn>
-              <ConfirmCancelBtn onClick={() => setShowDeleteConfirm(false)}>
-                Не удалять
-              </ConfirmCancelBtn>
-            </ConfirmButtons>
-          </ConfirmDialog>
-        </ConfirmOverlay>
-      )}
-    </>
-  );
-};
-
-export default StudentModal;

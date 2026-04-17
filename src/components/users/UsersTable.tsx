@@ -116,7 +116,10 @@ export const UsersTable: React.FC<UsersTableProps> = ({ rows, onRowClick }) => {
           {rows.map((row) => (
             <Tr
               key={row.id}
-              onClick={() => onRowClick(row.id)}
+              onClick={() => {
+                console.log("row.id from table:", row.id);
+                onRowClick(row.id);
+              }}
               style={{ cursor: "pointer" }}
             >
               <Td>{row.fio}</Td>

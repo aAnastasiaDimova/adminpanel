@@ -9,33 +9,37 @@ import { UsersPagination } from "./users/UsersPagination";
 import { useUsersPage } from "../hooks/account/useUsersPage";
 import { Loader } from "./loader";
 
-// import AddUserModal from "./AddStudentModal";
-// import UserModal from "./StudentModal";
+import StudentModal from "./StudentModal";
 
 const UsersPage: React.FC = () => {
   const {
     currentRows,
     totalPages,
     currentPage,
-    selectedUser,
+
     isLoading,
     error,
-    isFilterOpen,
-    isAddModalOpen,
-    isUserModalOpen,
+
     filters,
-    applyFilters,
+    isFilterOpen,
+
+    isUserModalOpen,
+    modalMode,
+    selectedUserId,
+
     openFilterModal,
     closeFilterModal,
-    openAddModal,
-    closeAddModal,
-    openUserModal,
+    applyFilters,
+
+    openCreateModal,
+    openDetailsModal,
     closeUserModal,
 
     handlePageChange,
-    // handleDeleteUser,
-    // handleSaveUser,
-    // handleAddUser,
+
+    handleCreateUser,
+    handleUpdateUser,
+    handleDeleteUser,
   } = useUsersPage();
 
   return (
@@ -44,7 +48,7 @@ const UsersPage: React.FC = () => {
         title="Пользователи"
         textButton="Добавить пользователя"
         onClickFilter={openFilterModal}
-        onClickAddModal={openAddModal}
+        onClickAddModal={openCreateModal} // 🔥
       />
 
       {isLoading && <Loader />}
@@ -52,7 +56,7 @@ const UsersPage: React.FC = () => {
 
       {!isLoading && !error && (
         <>
-          <UsersTable rows={currentRows} onRowClick={openUserModal} />
+          <UsersTable rows={currentRows} onRowClick={openDetailsModal} />
 
           <UsersPagination
             totalPages={totalPages}
@@ -61,27 +65,21 @@ const UsersPage: React.FC = () => {
           />
         </>
       )}
-
       <FilterModal
         isOpen={isFilterOpen}
         value={filters}
         onClose={closeFilterModal}
         onApply={applyFilters}
       />
-
-      {/* <UserModal
+      <StudentModal
         isOpen={isUserModalOpen}
         onClose={closeUserModal}
-        user={selectedUser}
-        onSave={handleSaveUser}
+        mode={modalMode}
+        studentId={selectedUserId}
+        onCreate={handleCreateUser}
+        onUpdate={handleUpdateUser}
         onDelete={handleDeleteUser}
-      /> */}
-
-      {/* <AddUserModal
-        isOpen={isAddModalOpen}
-        onClose={closeAddModal}
-        onAddUser={handleAddUser}
-      /> */}
+      />
     </PageContainer>
   );
 };
