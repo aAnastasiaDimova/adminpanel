@@ -1,4 +1,6 @@
 import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
+import { useStore } from "../../../store/storeProvider";
+import arrowDown from "../../../assets/arrowDown.svg";
 import ExitIcon from "../../../assets/exit.svg";
 import * as S from "./styles.filterModal";
 
@@ -10,6 +12,8 @@ interface PropsModal {
 const typesParser = parseAsArrayOf(parseAsString).withDefault([]);
 
 export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
+  const { eventsStore } = useStore();
+
   const [selectedTypes, setSelectedTypes] = useQueryState(
     "eventTypes",
     typesParser,
@@ -22,10 +26,6 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
     "endDate",
     parseAsString.withDefault(""),
   );
-
-  const isTypeSelected = (type: string) => {
-    return selectedTypes?.includes(type) ?? false;
-  };
   const allTypes = [
     "События",
     "Конкурс",
@@ -33,9 +33,13 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
     "Стажировка",
     "Вакансия",
   ];
+
+  const isTypeSelected = (type: string) => {
+    return selectedTypes?.includes(type) ?? false;
+  };
+
   const handleTypeChange = (type: string, checked: boolean) => {
     const currentTypes = selectedTypes ?? [];
-
     if (checked) {
       setSelectedTypes([...currentTypes, type]);
     } else {
@@ -44,7 +48,15 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
   };
 
   const handleApply = () => {
+    eventsStore.setFilters(selectedTypes ?? [], startDate ?? "", endDate ?? "");
     onClose();
+  };
+
+  const handleReset = () => {
+    setSelectedTypes([]);
+    setStartDate("");
+    setEndDate("");
+    eventsStore.resetFilters();
   };
 
   if (!isOpen) return null;
@@ -52,7 +64,6 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
   return (
     <>
       <S.Overlay onClick={onClose} />
-
       <S.ModalContainer>
         <S.Header>
           <S.ColumnTitle>Тип ивента</S.ColumnTitle>
@@ -63,7 +74,7 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
 
         <S.Content>
           <S.Section>
-            {allTypes?.slice(0, 3).map((type) => (
+            {allTypes.slice(0, 3).map((type) => (
               <S.CheckboxLabel key={type}>
                 <S.StyledCheckbox
                   type="checkbox"
@@ -75,7 +86,7 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
             ))}
           </S.Section>
           <S.Section>
-            {allTypes?.slice(3).map((type) => (
+            {allTypes.slice(3).map((type) => (
               <S.CheckboxLabel key={type}>
                 <S.StyledCheckbox
                   type="checkbox"
@@ -95,19 +106,31 @@ export const FilterModalEvents = ({ isOpen, onClose }: PropsModal) => {
               type="date"
               value={startDate || ""}
               onChange={(e) => setStartDate(e.target.value)}
+              placeholder="дд.мм.гггг"
             />
             <S.Label>Начало</S.Label>
+            {/* <S.CalendarIconWrapper>
+              <img src={arrowDown} alt="calendar" width={20} height={20} />
+            </S.CalendarIconWrapper> */}
           </S.InputWrapper>
           <S.InputWrapper>
             <S.InputDate
               type="date"
               value={endDate || ""}
               onChange={(e) => setEndDate(e.target.value)}
+              placeholder="дд.мм.гггг"
             />
             <S.Label>Завершение</S.Label>
+            {/* <S.CalendarIconWrapper>
+              <img src={arrowDown} alt="calendar" width={20} height={20} />
+            </S.CalendarIconWrapper> */}
           </S.InputWrapper>
         </S.Content>
-        <S.ApplyButton onClick={handleApply}>Применить</S.ApplyButton>
+
+        <S.ButtonsContainer>
+          <S.ResetButton onClick={handleReset}>Сбросить</S.ResetButton>
+          <S.ApplyButton onClick={handleApply}>Применить</S.ApplyButton>
+        </S.ButtonsContainer>
       </S.ModalContainer>
     </>
   );

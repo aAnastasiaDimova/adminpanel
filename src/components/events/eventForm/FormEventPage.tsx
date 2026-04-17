@@ -3,7 +3,7 @@ import { PageContainer } from "../../../styles/global";
 import { HeaderEvent } from "./HeaderEvent";
 import { FormSection } from "./FormSection";
 import { Loader } from "../../loader";
-import { useEventById } from "../../../hooks/events/useEventByID";
+import { useEventById } from "../../../hooks/events/useEventByID.ts";
 
 export const FormEventPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +16,7 @@ export const FormEventPage = () => {
       <HeaderEvent
         title={isEdit ? "Редактирование ивента" : "Создание ивента"}
       />
-      <FormSection key={id} data={event}/>
+      <FormSection key={id} data={event} />
     </PageContainer>
   );
 };

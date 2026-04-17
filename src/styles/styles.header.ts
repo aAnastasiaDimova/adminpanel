@@ -6,6 +6,11 @@ export const Header = styled.h1`
   color: #09090b;
   margin-bottom: 20px;
 `;
+export const HeaderWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
 export const Controls = styled.div`
   display: flex;

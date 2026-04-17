@@ -1,28 +1,41 @@
 import { useStore } from "../../store/storeProvider";
 import { observer } from "mobx-react-lite";
-import { useEvents } from "../../hooks/events/useEvents";
+import { useEvents } from "../../hooks/events/useEvents.ts";
 import { Loader } from "../loader";
 import { EventSection } from "./EventSection";
 import { PageContainer } from "../../styles/global";
 import { HeaderPage } from "../HeaderPage";
 import { Pagination } from "../Pagination";
 import { EventsContainer } from "../../styles/styles.events";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import styled from "@emotion/styled";
 import { useQueryState } from "nuqs";
 import { FilterModalEvents } from "./modal/FilterModalEvents";
 import { useNavigate } from "react-router-dom";
 
 const AllEvents = observer(() => {
-  const { isLoading, isSuccess } = useEvents();
+  const { isLoading } = useEvents();
   const { eventsStore } = useStore();
   const navigate = useNavigate();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [typeItems, setTypeItems] = useQueryState("type", {
     defaultValue: "События",
   });
+
+  useEffect(() => {
+    eventsStore.setCurrentType(typeItems || "События");
+  }, [typeItems, eventsStore]);
+
   const allTypes = useMemo(
-    () => ["События", "Конкурс", "Олимпиада", "Стажировка", "Вакансия"],
+    () => [
+      "Все",
+      "События",
+      "Конкурс",
+      "Олимпиада",
+      "Стажировка",
+      "Вакансия",
+      "Архив",
+    ],
     [],
   );
 
@@ -31,11 +44,6 @@ const AllEvents = observer(() => {
       setTypeItems(type);
     },
     [setTypeItems],
-  );
-
-  const events = useMemo(
-    () => eventsStore.getEventsByType(typeItems || "События"),
-    [eventsStore, typeItems, isSuccess],
   );
 
   if (isLoading) {
@@ -64,7 +72,7 @@ const AllEvents = observer(() => {
         </TypesEvent>
       </TypeEventsContainer>
       <EventsContainer>
-        <EventSection events={events ? events : []} />
+        <EventSection events={eventsStore.filteredEvents} />
       </EventsContainer>
       <Pagination />
 
@@ -77,7 +85,6 @@ const AllEvents = observer(() => {
 });
 
 export default AllEvents;
-
 const TypeEventsContainer = styled.div`
   display: flex;
   width: 100%;

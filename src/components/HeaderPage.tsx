@@ -18,24 +18,28 @@ export const HeaderPage = ({
 }: HeaderProps) => {
   return (
     <>
-      <S.Header>{title}</S.Header>
-      <S.Controls>
-        <S.SearchWrapper>
-          <S.SearchIconWrapper>
-            <img src={SearchIconSrc} alt="search" width={20} height={20} />
-          </S.SearchIconWrapper>
-          <S.SearchInput placeholder="Поиск" />
-        </S.SearchWrapper>
+      <S.HeaderWrapper>
+        <div>
+          <S.Header>{title}</S.Header>
+          <S.Controls>
+            <S.SearchWrapper>
+              <S.SearchIconWrapper>
+                <img src={SearchIconSrc} alt="search" width={20} height={20} />
+              </S.SearchIconWrapper>
+              <S.SearchInput placeholder="Поиск" />
+            </S.SearchWrapper>
 
-        <S.FilterButton onClick={() => onClickFilter()}>
-          <FilterIcon />
-        </S.FilterButton>
+            <S.FilterButton onClick={() => onClickFilter()}>
+              <FilterIcon />
+            </S.FilterButton>
 
-        <S.AddButton onClick={() => onClickAddModal()}>
-          <img src={PlusIconSrc} alt="add" width={20} height={20} />
-          {textButton}
-        </S.AddButton>
-      </S.Controls>
+            <S.AddButton onClick={() => onClickAddModal()}>
+              <img src={PlusIconSrc} alt="add" width={20} height={20} />
+              {textButton}
+            </S.AddButton>
+          </S.Controls>
+        </div>
+      </S.HeaderWrapper>
     </>
   );
 };

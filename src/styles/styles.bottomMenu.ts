@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 
 export const Bottom = styled.div`
   margin-top: 40px;
+  margin-bottom: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +14,7 @@ export const BottomNav = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px;
+  padding: 5px 7px;
   background: #007aff;
   border-radius: 9999px;
   max-width: 520px;
@@ -24,7 +25,7 @@ export const NavItem = styled.button<{ active: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 12px 20px;
+  padding: 10px 20px;
   border: none;
   border-radius: 99px;
   font-size: 15px;

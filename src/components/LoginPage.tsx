@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as S from "../styles/login.style";
-import { useAuth } from "../hooks/account/useAuth";
+import { useAuth } from "../hooks/account/useAuth.ts";
 
 const LoginPage: React.FC = () => {
   const signIn = useAuth();

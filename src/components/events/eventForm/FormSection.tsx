@@ -1,4 +1,4 @@
-import { useEventForm } from "../../../hooks/events/useEventForm";
+import { useEventForm } from "../../../hooks/events/useEventForm.ts";
 import {
   eventFieldsConfig,
   eventTypeMap,
@@ -51,7 +51,7 @@ export const FormSection = ({ data }: { data?: EventItem }) => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        paddingBottom: "151px",
+        // paddingBottom: "151px",
         marginTop: "80px",
       }}
       onSubmit={handleSubmit}

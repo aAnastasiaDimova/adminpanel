@@ -74,6 +74,7 @@ export const CheckboxLabel = styled.label`
 
 export const StyledCheckbox = styled.input`
   appearance: none;
+  margin-bottom: 7px;
   width: 20px;
   height: 20px;
   border: 2px solid #007aff;
@@ -85,7 +86,6 @@ export const StyledCheckbox = styled.input`
   &:checked {
     background: white;
   }
-
   &:checked::after {
     content: "✓";
     position: absolute;
@@ -108,28 +108,6 @@ export const BottomBar = styled.div`
   align-items: flex-start;
   z-index: 3;
 `;
-
-export const ApplyButton = styled.button`
-  margin-top: 20px;
-  width: 100%;
-  height: 40px;
-  background: linear-gradient(135deg, #7086f3, #1e7ee8);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 65px;
-  font-size: 14px;
-  font-weight: 500;
-  align-self: flex-end;
-  cursor: pointer;
-`;
-export const InputDate = styled.input`
-  height: 48px;
-  width: 100%;
-  outline: none;
-  border: 1.8px solid #aad3ff;
-  border-radius: 14px;
-`;
 export const InputWrapper = styled.div`
   width: calc(50% - 10px);
   position: relative;
@@ -144,4 +122,68 @@ export const Label = styled.div`
   color: #a2acb0;
   font-weight: 600;
   z-index: 1;
+`;
+
+export const ButtonsContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+`;
+
+export const ResetButton = styled.button`
+  flex: 1;
+  height: 40px;
+  background: transparent;
+  border: 1.5px solid #aad3ff;
+  border-radius: 10px;
+  color: #1e7ee8;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: #f0f7ff;
+  }
+`;
+
+export const ApplyButton = styled.button`
+  flex: 2;
+  height: 40px;
+  background: linear-gradient(135deg, #7086f3, #1e7ee8);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+`;
+
+export const CalendarIconWrapper = styled.div`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+`;
+
+export const InputDate = styled.input`
+  height: 48px;
+  width: 100%;
+  padding: 0 16px 0 16px;
+  border: 1.8px solid #aad3ff;
+  border-radius: 14px;
+  font-size: 14px;
+  color: #111827;
+  background: white;
+  outline: none;
+
+  &::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  &:focus {
+    border-color: #1e7ee8;
+  }
 `;

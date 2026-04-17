@@ -11,6 +11,7 @@ const dash = keyframes`
   100% { stroke-dashoffset: -125px; }
 `;
 export const ContainerLoader = styled.div`
+  min-height: 600px;
   width: 100%;
   height: 100%;
   display: flex;
