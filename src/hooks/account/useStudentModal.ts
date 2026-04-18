@@ -11,6 +11,7 @@ import {
 import { useUserById } from "./useUserById";
 import { useUserUpdate } from "./useUserUpdate";
 import { useUserRegister } from "./useUserRegister";
+import { useUserDelete } from "./useUserDelete";
 import { mapFormValuesToRegisterUserDto } from "../../types/user.mappers";
 type ModalMode = "create" | "details";
 type ViewMode = "view" | "edit";
@@ -20,9 +21,6 @@ type Params = {
   mode: ModalMode;
   studentId?: string | null;
   onClose: () => void;
-  onCreate?: (data: UserFormValues) => void | Promise<void>;
-  onUpdate?: (id: string, data: UserFormValues) => void | Promise<void>;
-  onDelete?: (id: string) => void | Promise<void>;
 };
 
 const createEmptyUserForm = (): UserFormValues => ({
@@ -61,9 +59,6 @@ export const useStudentModal = ({
   mode,
   studentId,
   onClose,
-  onCreate,
-  onUpdate,
-  onDelete,
 }: Params) => {
   const [viewMode, setViewMode] = useState<ViewMode>("view");
   const [formData, setFormData] = useState<UserFormValues>(
@@ -77,6 +72,8 @@ export const useStudentModal = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { mutateAsync: registerUserAsync, isPending: isRegisterLoading } =
     useUserRegister();
+  const { mutateAsync: deleteUserAsync, isPending: isDeleteLoading } =
+    useUserDelete();
   const isCreateMode = mode === "create";
   const isDetailsMode = mode === "details";
   const isEditMode = viewMode === "edit";
@@ -242,34 +239,27 @@ export const useStudentModal = ({
 
     if (isCreateMode) {
       const dto = mapFormValuesToRegisterUserDto(formData);
-
       await registerUserAsync(dto);
-
       onClose();
       return;
     }
 
     if (isDetailsMode && loadedStudentId) {
-      if (onUpdate) {
-        await onUpdate(loadedStudentId, formData);
-      } else {
-        const dto = mapFormValuesToUserDto(formData, loadedStudentId);
-        await updateUserAsync({
-          userId: loadedStudentId,
-          data: dto,
-        });
-      }
+      const dto = mapFormValuesToUserDto(formData, loadedStudentId);
+
+      await updateUserAsync({
+        userId: loadedStudentId,
+        data: dto,
+      });
 
       setViewMode("view");
     }
   };
 
   const handleDelete = async () => {
-    if (!loadedStudentId) {
-      return;
-    }
+    if (!loadedStudentId) return;
 
-    await onDelete?.(loadedStudentId);
+    await deleteUserAsync(loadedStudentId);
     setShowDeleteConfirm(false);
     onClose();
   };
@@ -323,7 +313,8 @@ export const useStudentModal = ({
   };
   return {
     formData,
-    isLoading: isUserLoading || isUpdateLoading || isRegisterLoading,
+    isLoading:
+      isUserLoading || isUpdateLoading || isRegisterLoading || isDeleteLoading,
     error: errorMessage,
     errors,
     skillInput,

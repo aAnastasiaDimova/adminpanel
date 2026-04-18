@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useUsers } from "./useUsers";
-import type { UserDto, UserFormValues, UsersFilters } from "../../types/user";
+import type { UserDto, UsersFilters } from "../../types/user";
 import { getMockProject, mapUserToTableRow } from "../../types/user.mappers";
 
 const ITEMS_PER_PAGE = 10;
@@ -99,20 +99,6 @@ export const useUsersPage = () => {
     setCurrentPage(page);
   };
 
-  const handleCreateUser = async (data: UserFormValues) => {
-    console.log("create", data);
-    closeUserModal();
-  };
-
-  const handleUpdateUser = async (id: string, data: UserFormValues) => {
-    console.log("update", id, data);
-  };
-
-  const handleDeleteUser = async (id: string) => {
-    console.log("delete", id);
-    closeUserModal();
-  };
-
   return {
     currentRows,
     totalPages,
@@ -136,9 +122,5 @@ export const useUsersPage = () => {
     closeUserModal,
 
     handlePageChange,
-
-    handleCreateUser,
-    handleUpdateUser,
-    handleDeleteUser,
   };
 };

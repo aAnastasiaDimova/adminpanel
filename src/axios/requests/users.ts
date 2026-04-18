@@ -1,6 +1,12 @@
 import type { RegisterUserDto, UserDto } from "../../types/user";
 import { apiClient } from "../axios";
-import { GET_ALL_USERS, GET_USER_BY_ID, REGISTER, UPDATE_USER } from "../endpoints";
+import {
+  DELETE_USER_BY_ID,
+  GET_ALL_USERS,
+  GET_USER_BY_ID,
+  REGISTER,
+  UPDATE_USER,
+} from "../endpoints";
 
 export const getAllUsers = async (): Promise<UserDto[]> => {
   const response = await apiClient.get(GET_ALL_USERS);
@@ -26,4 +32,9 @@ export const updateUser = async (
 
 export const registerUser = async (payload: RegisterUserDto): Promise<void> => {
   await apiClient.post(REGISTER, payload);
+};
+export const deleteUserById = async (userId: string): Promise<void> => {
+  const url = DELETE_USER_BY_ID.replace("{userId}", userId);
+
+  await apiClient.delete(url);
 };

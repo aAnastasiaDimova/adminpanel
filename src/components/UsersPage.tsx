@@ -36,10 +36,6 @@ const UsersPage: React.FC = () => {
     closeUserModal,
 
     handlePageChange,
-
-    handleCreateUser,
-    handleUpdateUser,
-    handleDeleteUser,
   } = useUsersPage();
 
   return (
@@ -77,9 +73,6 @@ const UsersPage: React.FC = () => {
           onClose={closeUserModal}
           mode={modalMode}
           studentId={selectedUserId}
-          onCreate={handleCreateUser}
-          onUpdate={handleUpdateUser}
-          onDelete={handleDeleteUser}
         />
       </ContentWrapper>
     </PageContainer>

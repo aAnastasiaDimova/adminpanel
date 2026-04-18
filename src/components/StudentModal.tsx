@@ -17,9 +17,6 @@ interface Props {
   onClose: () => void;
   mode: ModalMode;
   studentId?: string | null;
-  onCreate?: (data: UserFormValues) => void | Promise<void>;
-  onUpdate?: (id: string, data: UserFormValues) => void | Promise<void>;
-  onDelete?: (id: string) => void | Promise<void>;
 }
 
 const directionOptions: { value: 0 | 1; label: string }[] = [
@@ -32,9 +29,6 @@ const StudentModal: React.FC<Props> = ({
   onClose,
   mode,
   studentId,
-  onCreate,
-  onUpdate,
-  onDelete,
 }) => {
   const {
     formData,
@@ -69,10 +63,7 @@ const StudentModal: React.FC<Props> = ({
     isOpen,
     mode,
     studentId,
-    onClose,
-    onCreate,
-    onUpdate,
-    onDelete,
+    onClose
   });
 
   const hasAvatar = Boolean(formData.avatarUrl);
@@ -456,7 +447,7 @@ const ConfirmDialog = styled.div`
 const ConfirmTitle = styled.h3`
   font-size: 20px;
   font-weight: 600;
-  margin: 0 0 58px 0;
+  margin-bottom: 24px;
   color: #09090b;
 `;
 
