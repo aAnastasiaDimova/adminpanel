@@ -50,7 +50,7 @@ const UsersPage: React.FC = () => {
       {isLoading && <Loader />}
       {error && <div>{error}</div>}
 
-      <ContentWrapper>
+      <ContentWrapper style={{margin: "0 auto"}}>
         {!isLoading && !error && (
           <>
             <UsersTable rows={currentRows} onRowClick={openDetailsModal} />

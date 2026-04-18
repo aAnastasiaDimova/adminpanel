@@ -10,5 +10,5 @@ export const PageContainer = styled.div`
 
 export const ContentWrapper = styled.div`
   max-width: 1120px;
-  min-height: 70dvh;
+  min-height: 65dvh;
 `;
