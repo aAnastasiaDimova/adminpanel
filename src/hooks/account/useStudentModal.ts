@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
-import type { UserFormValues } from "../../types/user";
-import { mapUserToFormValues } from "../../types/user.mappers";
+import type {
+  RequiredUserField,
+  UserFormErrors,
+  UserFormValues,
+} from "../../types/user";
+import {
+  mapFormValuesToUserDto,
+  mapUserToFormValues,
+} from "../../types/user.mappers";
 import { useUserById } from "./useUserById";
-
+import { useUserUpdate } from "./useUserUpdate";
+import { useUserRegister } from "./useUserRegister";
+import { mapFormValuesToRegisterUserDto } from "../../types/user.mappers";
 type ModalMode = "create" | "details";
 type ViewMode = "view" | "edit";
 
@@ -33,7 +42,20 @@ const createEmptyUserForm = (): UserFormValues => ({
   userRole: 0,
   avatarUrl: "",
 });
+const requiredFields: RequiredUserField[] = [
+  "username",
+  "email",
+  "name",
+  "surname",
+  "portfolioLink",
+  "telegramLink",
+];
 
+const isRequiredField = (
+  key: keyof UserFormValues,
+): key is RequiredUserField => {
+  return requiredFields.includes(key as RequiredUserField);
+};
 export const useStudentModal = ({
   isOpen,
   mode,
@@ -47,28 +69,29 @@ export const useStudentModal = ({
   const [formData, setFormData] = useState<UserFormValues>(
     createEmptyUserForm(),
   );
+  const [errors, setErrors] = useState<UserFormErrors>({});
+  const [fullNameInput, setFullNameInput] = useState("");
   const [loadedStudentId, setLoadedStudentId] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
+  const { mutateAsync: registerUserAsync, isPending: isRegisterLoading } =
+    useUserRegister();
   const isCreateMode = mode === "create";
   const isDetailsMode = mode === "details";
   const isEditMode = viewMode === "edit";
   const isViewMode = viewMode === "view";
 
   const shouldLoadUser = isOpen && isDetailsMode && Boolean(studentId);
-  console.log("useStudentModal:", {
-    isOpen,
-    isDetailsMode,
-    studentId,
-    shouldLoadUser,
-  });
+
   const {
     data: loadedUser,
-    isLoading,
+    isLoading: isUserLoading,
     error,
   } = useUserById(studentId ?? null, shouldLoadUser);
+
+  const { mutateAsync: updateUserAsync, isPending: isUpdateLoading } =
+    useUserUpdate();
 
   const errorMessage =
     error instanceof Error
@@ -85,9 +108,13 @@ export const useStudentModal = ({
     setSkillInput("");
     setFocusedField(null);
     setShowDeleteConfirm(false);
+    setErrors({});
 
     if (isCreateMode) {
-      setFormData(createEmptyUserForm());
+      const emptyForm = createEmptyUserForm();
+
+      setFormData(emptyForm);
+      syncFullNameInput(emptyForm);
       setLoadedStudentId(null);
       setViewMode("edit");
       return;
@@ -103,7 +130,10 @@ export const useStudentModal = ({
       return;
     }
 
-    setFormData(mapUserToFormValues(loadedUser));
+    const mappedUser = mapUserToFormValues(loadedUser);
+
+    setFormData(mappedUser);
+    syncFullNameInput(mappedUser);
     setLoadedStudentId(loadedUser.id);
   }, [loadedUser]);
 
@@ -115,6 +145,18 @@ export const useStudentModal = ({
       ...prev,
       [key]: value,
     }));
+
+    if (isRequiredField(key)) {
+      setErrors((prev) => {
+        if (!prev[key]) {
+          return prev;
+        }
+
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
   };
 
   const toggleDirection = (direction: 0 | 1) => {
@@ -161,16 +203,63 @@ export const useStudentModal = ({
       setViewMode("edit");
     }
   };
+  const validateForm = (): UserFormErrors => {
+    const nextErrors: UserFormErrors = {};
 
+    if (!formData.username.trim()) {
+      nextErrors.username = "Обязательное поле";
+    }
+
+    if (!formData.email.trim()) {
+      nextErrors.email = "Обязательное поле";
+    }
+
+    if (!formData.name.trim()) {
+      nextErrors.name = "Обязательное поле";
+    }
+
+    if (!formData.surname.trim()) {
+      nextErrors.surname = "Обязательное поле";
+    }
+
+    if (!formData.telegramLink.trim()) {
+      nextErrors.telegramLink = "Обязательное поле";
+    }
+
+    if (!formData.portfolioLink.trim()) {
+      nextErrors.portfolioLink = "Обязательное поле";
+    }
+
+    return nextErrors;
+  };
   const handleSave = async () => {
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     if (isCreateMode) {
-      await onCreate?.(formData);
+      const dto = mapFormValuesToRegisterUserDto(formData);
+
+      await registerUserAsync(dto);
+
       onClose();
       return;
     }
 
     if (isDetailsMode && loadedStudentId) {
-      await onUpdate?.(loadedStudentId, formData);
+      if (onUpdate) {
+        await onUpdate(loadedStudentId, formData);
+      } else {
+        const dto = mapFormValuesToUserDto(formData, loadedStudentId);
+        await updateUserAsync({
+          userId: loadedStudentId,
+          data: dto,
+        });
+      }
+
       setViewMode("view");
     }
   };
@@ -192,7 +281,10 @@ export const useStudentModal = ({
     }
 
     if (loadedUser) {
-      setFormData(mapUserToFormValues(loadedUser));
+      const mappedUser = mapUserToFormValues(loadedUser);
+
+      setFormData(mappedUser);
+      syncFullNameInput(mappedUser);
     }
 
     setSkillInput("");
@@ -200,13 +292,44 @@ export const useStudentModal = ({
     setViewMode("view");
   };
 
+  const normalizeNamePart = (value: string) => {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return "";
+    }
+
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+  };
+
+  const syncFullNameInput = (data: UserFormValues) => {
+    setFullNameInput(
+      [data.surname, data.name, data.patronymic].filter(Boolean).join(" "),
+    );
+  };
+
+  const handleFullNameChange = (value: string) => {
+    setFullNameInput(value);
+  };
+
+  const handleFullNameBlur = () => {
+    const parts = fullNameInput.trim().split(/\s+/);
+
+    updateField("surname", normalizeNamePart(parts[0] ?? ""));
+    updateField("name", normalizeNamePart(parts[1] ?? ""));
+    updateField("patronymic", normalizeNamePart(parts.slice(2).join(" ")));
+
+    setFocusedField(null);
+  };
   return {
     formData,
-    isLoading,
+    isLoading: isUserLoading || isUpdateLoading || isRegisterLoading,
     error: errorMessage,
+    errors,
     skillInput,
     focusedField,
     showDeleteConfirm,
+    fullNameInput,
 
     isCreateMode,
     isDetailsMode,
@@ -226,5 +349,7 @@ export const useStudentModal = ({
     handleSave,
     handleDelete,
     handleCancel,
+    handleFullNameChange,
+    handleFullNameBlur,
   };
 };

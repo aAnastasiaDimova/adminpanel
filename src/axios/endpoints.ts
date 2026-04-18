@@ -3,6 +3,7 @@ export const GET_USER = "/Account/get-user";
 export const GET_USER_BY_ID = "/Account/get-user-by-id/{userId}";
 export const DELETE_ACCOUNT = "/Account/delete-account";
 export const UPDATE_ACCOUNT = "/Account/update-account";
+export const UPDATE_USER = "/Account/update-user/{userId}";
 export const ADD_EVENT_TO_USER = "/Account/add-event-to-user";
 export const REMOVE_EVENT_FROM_USER = "/Account/remove-event-from-user";
 export const GET_USER_EVENTS_ACCOUNT = "/Account/get-user-events";

@@ -1,5 +1,5 @@
 import { getCurrentUser, signIn, signOut } from "./requests/auth";
-import { getAllUsers, getUserById } from "./requests/users";
+import { getAllUsers, getUserById, registerUser, updateUser } from "./requests/users";
 import {
   changeEventById,
   createEvent,
@@ -16,7 +16,9 @@ export const API = {
   },
   users: {
     getAllUsers,
-    getUserById
+    getUserById,
+    updateUser,
+    registerUser
   },
   events: {
     getEvents,

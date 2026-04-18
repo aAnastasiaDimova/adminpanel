@@ -54,3 +54,32 @@ export type UsersFilters = {
   courses: Course[];
   directions: Direction[];
 };
+
+export type RegisterUserDto = {
+  username: string;
+  email: string;
+  password: string;
+  name: string;
+  surname: string;
+  patronymic: string;
+  description: string;
+  telegramLink: string;
+  portfolioLink: string;
+  isSubscribedToNotifications: boolean;
+  age: number | null;
+  directions: Direction[];
+  course: Course;
+  group: string;
+  phoneNumber: string;
+  skills: string[];
+};
+
+export type RequiredUserField =
+  | "username"
+  | "email"
+  | "name"
+  | "surname"
+  | "portfolioLink"
+  | "telegramLink";
+
+export type UserFormErrors = Partial<Record<RequiredUserField, string>>;

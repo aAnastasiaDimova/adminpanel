@@ -1,8 +1,23 @@
 import { COURSE_LABELS, DIRECTION_LABELS } from "./user.constants";
-import type { UserDto, UserFormValues, UserTableRow } from "./user";
+import type {
+  UserDto,
+  UserFormValues,
+  UserTableRow,
+  RegisterUserDto,
+} from "./user";
+
+const capitalize = (value: string) =>
+  value.trim()
+    ? value.trim().charAt(0).toUpperCase() + value.trim().slice(1).toLowerCase()
+    : "";
+
+const normalizePersonField = (value: string) => capitalize(value);
 
 export const getUserFio = (user: UserDto): string =>
-  [user.surname, user.name, user.patronymic].filter(Boolean).join(" ");
+  [user.surname, user.name, user.patronymic]
+    .filter((v): v is string => Boolean(v))
+    .map(capitalize)
+    .join(" ");
 
 export const getMockProject = (user: UserDto): string => {
   return user.course <= 2 ? "ПАЗЛ" : "КОД";
@@ -46,4 +61,55 @@ export const mapUserToFormValues = (user: UserDto): UserFormValues => ({
   skills: user.skills,
   userRole: user.userRole,
   avatarUrl: user.avatarUrl ?? "",
+});
+
+export const mapFormValuesToUserDto = (
+  form: UserFormValues,
+  userId: string,
+): UserDto => ({
+  id: userId,
+  username: form.username,
+  email: form.email,
+  name: normalizePersonField(form.name),
+  surname: normalizePersonField(form.surname),
+  patronymic: normalizePersonField(form.patronymic) || null,
+  description: form.description || null,
+  telegramLink: form.telegramLink,
+  portfolioLink: form.portfolioLink,
+  isSubscribedToNotifications: form.isSubscribedToNotifications,
+  age: form.age,
+  directions: form.directions,
+  course: form.course,
+  skills: form.skills,
+  userRole: form.userRole,
+  avatarUrl: form.avatarUrl || null,
+});
+
+export const mapFormValuesToRegisterUserDto = (
+  form: UserFormValues,
+): RegisterUserDto => ({
+  username: form.username,
+  email: form.email,
+
+  password: "string",
+
+
+  name: normalizePersonField(form.name),
+  surname: normalizePersonField(form.surname),
+  patronymic: normalizePersonField(form.patronymic),
+
+  description: form.description,
+  telegramLink: form.telegramLink,
+  portfolioLink: form.portfolioLink,
+
+  isSubscribedToNotifications: form.isSubscribedToNotifications,
+  age: form.age,
+
+  directions: form.directions,
+  course: form.course,
+
+  group: "",
+  phoneNumber: "",
+
+  skills: form.skills,
 });

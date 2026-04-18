@@ -13,4 +13,5 @@ export const eventsKeys = {
 };
 export const usersKeys = {
   all: ["users"] as const,
+  byId: (id: string) => ["user", id] as const,
 };

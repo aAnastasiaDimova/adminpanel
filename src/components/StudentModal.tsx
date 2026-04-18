@@ -40,9 +40,11 @@ const StudentModal: React.FC<Props> = ({
     formData,
     isLoading,
     error,
+    errors,
     skillInput,
     focusedField,
     showDeleteConfirm,
+    fullNameInput,
 
     isCreateMode,
     isDetailsMode,
@@ -61,6 +63,8 @@ const StudentModal: React.FC<Props> = ({
     handleSave,
     handleDelete,
     handleCancel,
+    handleFullNameChange,
+    handleFullNameBlur,
   } = useStudentModal({
     isOpen,
     mode,
@@ -112,45 +116,42 @@ const StudentModal: React.FC<Props> = ({
               </HeaderActions>
             )}
           </ModalHeader>
+          {!isCreateMode && (
+            <AvatarWrapper>
+              <AvatarContainer clickable={isEditMode}>
+                {hasAvatar && (
+                  <AvatarImage src={formData.avatarUrl} alt="avatar" />
+                )}
 
-          <AvatarWrapper>
-            <AvatarContainer clickable={isEditMode}>
-              {hasAvatar && (
-                <AvatarImage src={formData.avatarUrl} alt="avatar" />
-              )}
+                {showPlus && <AvatarPlusIcon src={PlusIconSrc} alt="add" />}
 
-              {showPlus && <AvatarPlusIcon src={PlusIconSrc} alt="add" />}
-
-              {showFallback && (
-                <AvatarFallback>
-                  {formData.name?.[0]}
-                  {formData.surname?.[0]}
-                </AvatarFallback>
-              )}
-            </AvatarContainer>
-          </AvatarWrapper>
+                {showFallback && (
+                  <AvatarFallback>
+                    {formData.name?.[0]}
+                    {formData.surname?.[0]}
+                  </AvatarFallback>
+                )}
+              </AvatarContainer>
+            </AvatarWrapper>
+          )}
 
           {isLoading && <div>Загрузка...</div>}
           {!!error && <div>{error}</div>}
 
-          {!isLoading && (
+          {!isLoading && !error && (
             <Form>
               <FullWidthField>
                 <Field>
-                  <FieldLabel isFocused={focusedField === "fullName"}>
+                  <FieldLabel isFocused={focusedField === "fullName"}  hasError={Boolean(errors.surname || errors.name)}>
                     ФИО
                   </FieldLabel>
                   <Input
-                    value={`${formData.surname} ${formData.name} ${formData.patronymic}`.trim()}
-                    onChange={(e) => {
-                      const parts = e.target.value.trim().split(/\s+/);
-                      updateField("surname", parts[0] ?? "");
-                      updateField("name", parts[1] ?? "");
-                      updateField("patronymic", parts[2] ?? "");
-                    }}
+                    value={fullNameInput}
+                    onChange={(e) => handleFullNameChange(e.target.value)}
                     onFocus={() => setFocusedField("fullName")}
-                    onBlur={() => setFocusedField(null)}
+                    onBlur={handleFullNameBlur}
                     isFocused={focusedField === "fullName"}
+                    hasError={Boolean(errors.surname || errors.name)}
                     disabled={isViewMode}
                     placeholder=" "
                   />
@@ -232,7 +233,7 @@ const StudentModal: React.FC<Props> = ({
                 </Field>
 
                 <Field>
-                  <FieldLabel isFocused={focusedField === "portfolioLink"}>
+                  <FieldLabel isFocused={focusedField === "portfolioLink"}  hasError={Boolean(errors.portfolioLink)}>
                     Ссылка на портфолио
                   </FieldLabel>
                   <Input
@@ -243,13 +244,14 @@ const StudentModal: React.FC<Props> = ({
                     onFocus={() => setFocusedField("portfolioLink")}
                     onBlur={() => setFocusedField(null)}
                     isFocused={focusedField === "portfolioLink"}
+                    hasError={Boolean(errors.portfolioLink)}
                     disabled={isViewMode}
                     placeholder=" "
                   />
                 </Field>
 
                 <Field>
-                  <FieldLabel isFocused={focusedField === "username"}>
+                  <FieldLabel isFocused={focusedField === "username"} hasError={Boolean(errors.username)}>
                     Username
                   </FieldLabel>
                   <Input
@@ -258,13 +260,14 @@ const StudentModal: React.FC<Props> = ({
                     onFocus={() => setFocusedField("username")}
                     onBlur={() => setFocusedField(null)}
                     isFocused={focusedField === "username"}
+                    hasError={Boolean(errors.username)}
                     disabled={isViewMode}
                     placeholder=" "
                   />
                 </Field>
 
                 <Field>
-                  <FieldLabel isFocused={focusedField === "email"}>
+                  <FieldLabel isFocused={focusedField === "email"} hasError={Boolean(errors.email)}>
                     Почта
                   </FieldLabel>
                   <Input
@@ -273,14 +276,15 @@ const StudentModal: React.FC<Props> = ({
                     onFocus={() => setFocusedField("email")}
                     onBlur={() => setFocusedField(null)}
                     isFocused={focusedField === "email"}
+                    hasError={Boolean(errors.email)}
                     disabled={isViewMode}
                     placeholder=" "
                   />
                 </Field>
 
                 <Field>
-                  <FieldLabel isFocused={focusedField === "telegramLink"}>
-                    Телефон
+                  <FieldLabel isFocused={focusedField === "telegramLink"} hasError={Boolean(errors.telegramLink)}>
+                    Телеgram
                   </FieldLabel>
                   <Input
                     value={formData.telegramLink}
@@ -290,6 +294,7 @@ const StudentModal: React.FC<Props> = ({
                     onFocus={() => setFocusedField("telegramLink")}
                     onBlur={() => setFocusedField(null)}
                     isFocused={focusedField === "telegramLink"}
+                    hasError={Boolean(errors.telegramLink)}
                     disabled={isViewMode}
                     placeholder=" "
                   />
@@ -365,8 +370,13 @@ const StudentModal: React.FC<Props> = ({
                     <CancelButton type="button" onClick={handleCancel}>
                       {isCreateMode ? "Отменить" : "Удалить изменения"}
                     </CancelButton>
-
-                    <SaveButton type="button" onClick={handleSave}>
+                    <SaveButton
+                      type="button"
+                      onClick={() => {
+                        console.log("click save button");
+                        handleSave();
+                      }}
+                    >
                       Сохранить
                     </SaveButton>
                   </>
@@ -597,29 +607,37 @@ const Field = styled.div`
   position: relative;
 `;
 
-const FieldLabel = styled.label<{ isFocused?: boolean }>`
+const FieldLabel = styled.label<{ isFocused?: boolean; hasError?: boolean }>`
   position: absolute;
   left: 12px;
   top: 0;
   transform: translateY(-50%);
   background: #ffffff;
   padding: 0 6px;
-  color: ${(p) => (p.isFocused ? "#007AFF" : "#A2ACB0")};
+  color: ${({ hasError, isFocused }) =>
+    hasError ? "#ef4444" : isFocused ? "#1677ff" : "#6b7280"};
   font-size: 13px;
   font-weight: 500;
   pointer-events: none;
   z-index: 2;
 `;
 
-const Input = styled.input<{ isFocused?: boolean; disabled?: boolean }>`
+const Input = styled.input<{
+  isFocused?: boolean;
+  disabled?: boolean;
+  hasError?: boolean;
+}>`
   width: 100%;
   padding: 16px;
-  border: ${(p) =>
-    p.disabled
-      ? "1.5px solid #A2ACB0"
-      : p.isFocused
-        ? "1.5px solid #007AFF"
-        : "1.5px solid #A2ACB0"};
+  border: 1.5px solid
+    ${(p) =>
+      p.hasError
+        ? "#ef4444"
+        : p.disabled
+          ? "#A2ACB0"
+          : p.isFocused
+            ? "#007AFF"
+            : "#A2ACB0"};
   border-radius: 14px;
   background: #ffffff;
   color: #09090b;
@@ -636,11 +654,11 @@ const Input = styled.input<{ isFocused?: boolean; disabled?: boolean }>`
   }
 `;
 
-const Select = styled.select<{ disabled?: boolean }>`
+const Select = styled.select<{ disabled?: boolean; hasError?: boolean }>`
   width: 100%;
   padding: 16px;
   border: ${(p) =>
-    p.disabled ? "1.5px solid #A2ACB0" : "1.5px solid #A2ACB0"};
+    p.disabled ? "1.5px solid #A2ACB0" : p.hasError ? "1.5px solid #ef4444" : "1.5px solid #A2ACB0"};
   border-radius: 14px;
   background: #ffffff;
   color: #09090b;
@@ -771,4 +789,6 @@ const SaveButton = styled.button`
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
+  cursor: ${(p) => (p.disabled ? "not-allowed" : "pointer")};
+  opacity: ${(p) => (p.disabled ? 0.6 : 1)};
 `;

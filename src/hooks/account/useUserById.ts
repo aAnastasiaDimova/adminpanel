@@ -1,13 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../axios";
+import { usersKeys } from "../keys";
+import type { UserDto } from "../../types/user";
 
 export const useUserById = (
   userId: string | null,
-  enabled: boolean
+  enabled = true
 ) => {
-  return useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => API.users.getUserById(userId as string),
-    enabled: enabled && Boolean(userId),
+  return useQuery<UserDto>({
+    queryKey: userId ? usersKeys.byId(userId) : ["user", "empty"],
+    queryFn: async () => {
+      const user = await API.users.getUserById(userId as string);
+      return user;
+    },
+    enabled: enabled && !!userId,
   });
 };
