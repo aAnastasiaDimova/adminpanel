@@ -1,5 +1,4 @@
 import React from "react";
-import { type UserFormValues } from "../types/user";
 import styled from "@emotion/styled";
 import ArrowBackIcon from "../assets/arrow-back.svg";
 import PencilIcon from "../assets/pencil.svg";
@@ -63,7 +62,7 @@ const StudentModal: React.FC<Props> = ({
     isOpen,
     mode,
     studentId,
-    onClose
+    onClose,
   });
 
   const hasAvatar = Boolean(formData.avatarUrl);
@@ -107,273 +106,291 @@ const StudentModal: React.FC<Props> = ({
               </HeaderActions>
             )}
           </ModalHeader>
-          {!isCreateMode && (
-            <AvatarWrapper>
-              <AvatarContainer clickable={isEditMode}>
-                {hasAvatar && (
-                  <AvatarImage src={formData.avatarUrl} alt="avatar" />
-                )}
-
-                {showPlus && <AvatarPlusIcon src={PlusIconSrc} alt="add" />}
-
-                {showFallback && (
-                  <AvatarFallback>
-                    {formData.name?.[0]}
-                    {formData.surname?.[0]}
-                  </AvatarFallback>
-                )}
-              </AvatarContainer>
-            </AvatarWrapper>
-          )}
-
           {isLoading && <div>Загрузка...</div>}
           {!!error && <div>{error}</div>}
-
           {!isLoading && !error && (
-            <Form>
-              <FullWidthField>
-                <Field>
-                  <FieldLabel isFocused={focusedField === "fullName"}  hasError={Boolean(errors.surname || errors.name)}>
-                    ФИО
-                  </FieldLabel>
-                  <Input
-                    value={fullNameInput}
-                    onChange={(e) => handleFullNameChange(e.target.value)}
-                    onFocus={() => setFocusedField("fullName")}
-                    onBlur={handleFullNameBlur}
-                    isFocused={focusedField === "fullName"}
-                    hasError={Boolean(errors.surname || errors.name)}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-              </FullWidthField>
+            <>
+              {!isCreateMode && (
+                <AvatarWrapper>
+                  <AvatarContainer clickable={isEditMode}>
+                    {hasAvatar && (
+                      <AvatarImage src={formData.avatarUrl} alt="avatar" />
+                    )}
 
-              <FullWidthField>
-                <Field>
-                  <FieldLabel isFocused={focusedField === "directions"}>
-                    Направление
-                  </FieldLabel>
-                  <CheckboxGroup disabled={isViewMode}>
-                    <CheckboxList>
-                      {directionOptions.map((direction) => (
-                        <CheckboxItem
-                          key={direction.value}
-                          checked={formData.directions.includes(
-                            direction.value,
-                          )}
-                          disabled={isViewMode}
-                          onClick={() => toggleDirection(direction.value)}
-                        >
-                          <input
-                            type="checkbox"
+                    {showPlus && <AvatarPlusIcon src={PlusIconSrc} alt="add" />}
+
+                    {showFallback && (
+                      <AvatarFallback>
+                        {formData.name?.[0]}
+                        {formData.surname?.[0]}
+                      </AvatarFallback>
+                    )}
+                  </AvatarContainer>
+                </AvatarWrapper>
+              )}
+
+              <Form>
+                <FullWidthField>
+                  <Field>
+                    <FieldLabel
+                      isFocused={focusedField === "fullName"}
+                      hasError={Boolean(errors.surname || errors.name)}
+                    >
+                      ФИO
+                    </FieldLabel>
+                    <Input
+                      value={fullNameInput}
+                      onChange={(e) => handleFullNameChange(e.target.value)}
+                      onFocus={() => setFocusedField("fullName")}
+                      onBlur={handleFullNameBlur}
+                      isFocused={focusedField === "fullName"}
+                      hasError={Boolean(errors.surname || errors.name)}
+                      disabled={isViewMode}
+                      placeholder=" "
+                    />
+                  </Field>
+                </FullWidthField>
+
+                <FullWidthField>
+                  <Field>
+                    <FieldLabel isFocused={focusedField === "directions"}>
+                      Направление
+                    </FieldLabel>
+                    <CheckboxGroup disabled={isViewMode}>
+                      <CheckboxList>
+                        {directionOptions.map((direction) => (
+                          <CheckboxItem
+                            key={direction.value}
                             checked={formData.directions.includes(
                               direction.value,
                             )}
-                            readOnly
-                          />
-                          <span>{direction.label}</span>
-                        </CheckboxItem>
-                      ))}
-                    </CheckboxList>
-                  </CheckboxGroup>
-                </Field>
-              </FullWidthField>
-
-              <Grid>
-                <Field>
-                  <FieldLabel isFocused={focusedField === "age"}>
-                    Возраст
-                  </FieldLabel>
-                  <Input
-                    type="number"
-                    value={formData.age ?? ""}
-                    onChange={(e) =>
-                      updateField(
-                        "age",
-                        e.target.value === "" ? null : Number(e.target.value),
-                      )
-                    }
-                    onFocus={() => setFocusedField("age")}
-                    onBlur={() => setFocusedField(null)}
-                    isFocused={focusedField === "age"}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-
-                <Field>
-                  <FieldLabel isFocused={focusedField === "course"}>
-                    Курс
-                  </FieldLabel>
-                  <Select
-                    value={formData.course}
-                    onChange={(e) =>
-                      updateField(
-                        "course",
-                        Number(e.target.value) as 1 | 2 | 3 | 4,
-                      )
-                    }
-                    disabled={isViewMode}
-                  >
-                    <option value={1}>1 курс</option>
-                    <option value={2}>2 курс</option>
-                    <option value={3}>3 курс</option>
-                    <option value={4}>4 курс</option>
-                  </Select>
-                </Field>
-
-                <Field>
-                  <FieldLabel isFocused={focusedField === "portfolioLink"}  hasError={Boolean(errors.portfolioLink)}>
-                    Ссылка на портфолио
-                  </FieldLabel>
-                  <Input
-                    value={formData.portfolioLink}
-                    onChange={(e) =>
-                      updateField("portfolioLink", e.target.value)
-                    }
-                    onFocus={() => setFocusedField("portfolioLink")}
-                    onBlur={() => setFocusedField(null)}
-                    isFocused={focusedField === "portfolioLink"}
-                    hasError={Boolean(errors.portfolioLink)}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-
-                <Field>
-                  <FieldLabel isFocused={focusedField === "username"} hasError={Boolean(errors.username)}>
-                    Username
-                  </FieldLabel>
-                  <Input
-                    value={formData.username}
-                    onChange={(e) => updateField("username", e.target.value)}
-                    onFocus={() => setFocusedField("username")}
-                    onBlur={() => setFocusedField(null)}
-                    isFocused={focusedField === "username"}
-                    hasError={Boolean(errors.username)}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-
-                <Field>
-                  <FieldLabel isFocused={focusedField === "email"} hasError={Boolean(errors.email)}>
-                    Почта
-                  </FieldLabel>
-                  <Input
-                    value={formData.email}
-                    onChange={(e) => updateField("email", e.target.value)}
-                    onFocus={() => setFocusedField("email")}
-                    onBlur={() => setFocusedField(null)}
-                    isFocused={focusedField === "email"}
-                    hasError={Boolean(errors.email)}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-
-                <Field>
-                  <FieldLabel isFocused={focusedField === "telegramLink"} hasError={Boolean(errors.telegramLink)}>
-                    Телеgram
-                  </FieldLabel>
-                  <Input
-                    value={formData.telegramLink}
-                    onChange={(e) =>
-                      updateField("telegramLink", e.target.value)
-                    }
-                    onFocus={() => setFocusedField("telegramLink")}
-                    onBlur={() => setFocusedField(null)}
-                    isFocused={focusedField === "telegramLink"}
-                    hasError={Boolean(errors.telegramLink)}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-              </Grid>
-
-              <FullWidth>
-                <Field>
-                  <FieldLabel isFocused={focusedField === "description"}>
-                    О себе
-                  </FieldLabel>
-
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => updateField("description", e.target.value)}
-                    onFocus={() => setFocusedField("description")}
-                    onBlur={() => setFocusedField(null)}
-                    isFocused={focusedField === "description"}
-                    disabled={isViewMode}
-                    placeholder=" "
-                  />
-                </Field>
-              </FullWidth>
-
-              <FullWidth>
-                <Field>
-                  <FieldLabel>Стек технологий</FieldLabel>
-
-                  <TagsBox disabled={isViewMode}>
-                    {formData.skills.map((skill) => (
-                      <TechTag key={skill}>
-                        #{skill}
-                        {isEditMode && (
-                          <RemoveTag
-                            type="button"
-                            onClick={() => removeSkill(skill)}
+                            disabled={isViewMode}
+                            onClick={() => toggleDirection(direction.value)}
                           >
-                            ×
-                          </RemoveTag>
-                        )}
-                      </TechTag>
-                    ))}
-                  </TagsBox>
-                </Field>
+                            <input
+                              type="checkbox"
+                              checked={formData.directions.includes(
+                                direction.value,
+                              )}
+                              readOnly
+                            />
+                            <span>{direction.label}</span>
+                          </CheckboxItem>
+                        ))}
+                      </CheckboxList>
+                    </CheckboxGroup>
+                  </Field>
+                </FullWidthField>
 
-                {isEditMode && (
-                  <Field style={{ marginTop: "20px" }}>
-                    <FieldLabel isFocused={focusedField === "skillInput"}>
-                      Технология
+                <Grid>
+                  <Field>
+                    <FieldLabel isFocused={focusedField === "age"}>
+                      Возраст
                     </FieldLabel>
-
                     <Input
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onFocus={() => setFocusedField("skillInput")}
+                      type="number"
+                      value={formData.age ?? ""}
+                      onChange={(e) =>
+                        updateField(
+                          "age",
+                          e.target.value === "" ? null : Number(e.target.value),
+                        )
+                      }
+                      onFocus={() => setFocusedField("age")}
                       onBlur={() => setFocusedField(null)}
-                      isFocused={focusedField === "skillInput"}
-                      placeholder="Напишите технологию и нажмите Enter"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          addSkill();
-                        }
-                      }}
+                      isFocused={focusedField === "age"}
+                      disabled={isViewMode}
+                      placeholder=" "
                     />
                   </Field>
-                )}
-              </FullWidth>
 
-              <ModalFooter>
-                {isEditMode && (
-                  <>
-                    <CancelButton type="button" onClick={handleCancel}>
-                      {isCreateMode ? "Отменить" : "Удалить изменения"}
-                    </CancelButton>
-                    <SaveButton
-                      type="button"
-                      onClick={() => {
-                        console.log("click save button");
-                        handleSave();
-                      }}
+                  <Field>
+                    <FieldLabel isFocused={focusedField === "course"}>
+                      Курс
+                    </FieldLabel>
+                    <Select
+                      value={formData.course}
+                      onChange={(e) =>
+                        updateField(
+                          "course",
+                          Number(e.target.value) as 1 | 2 | 3 | 4,
+                        )
+                      }
+                      disabled={isViewMode}
                     >
-                      Сохранить
-                    </SaveButton>
-                  </>
-                )}
-              </ModalFooter>
-            </Form>
+                      <option value={1}>1 курс</option>
+                      <option value={2}>2 курс</option>
+                      <option value={3}>3 курс</option>
+                      <option value={4}>4 курс</option>
+                    </Select>
+                  </Field>
+
+                  <Field>
+                    <FieldLabel
+                      isFocused={focusedField === "portfolioLink"}
+                      hasError={Boolean(errors.portfolioLink)}
+                    >
+                      Ссылка на портфолио
+                    </FieldLabel>
+                    <Input
+                      value={formData.portfolioLink}
+                      onChange={(e) =>
+                        updateField("portfolioLink", e.target.value)
+                      }
+                      onFocus={() => setFocusedField("portfolioLink")}
+                      onBlur={() => setFocusedField(null)}
+                      isFocused={focusedField === "portfolioLink"}
+                      hasError={Boolean(errors.portfolioLink)}
+                      disabled={isViewMode}
+                      placeholder=" "
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel
+                      isFocused={focusedField === "username"}
+                      hasError={Boolean(errors.username)}
+                    >
+                      Username
+                    </FieldLabel>
+                    <Input
+                      value={formData.username}
+                      onChange={(e) => updateField("username", e.target.value)}
+                      onFocus={() => setFocusedField("username")}
+                      onBlur={() => setFocusedField(null)}
+                      isFocused={focusedField === "username"}
+                      hasError={Boolean(errors.username)}
+                      disabled={isViewMode}
+                      placeholder=" "
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel
+                      isFocused={focusedField === "email"}
+                      hasError={Boolean(errors.email)}
+                    >
+                      Почта
+                    </FieldLabel>
+                    <Input
+                      value={formData.email}
+                      onChange={(e) => updateField("email", e.target.value)}
+                      onFocus={() => setFocusedField("email")}
+                      onBlur={() => setFocusedField(null)}
+                      isFocused={focusedField === "email"}
+                      hasError={Boolean(errors.email)}
+                      disabled={isViewMode}
+                      placeholder=" "
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel
+                      isFocused={focusedField === "telegramLink"}
+                      hasError={Boolean(errors.telegramLink)}
+                    >
+                      Телеgram
+                    </FieldLabel>
+                    <Input
+                      value={formData.telegramLink}
+                      onChange={(e) =>
+                        updateField("telegramLink", e.target.value)
+                      }
+                      onFocus={() => setFocusedField("telegramLink")}
+                      onBlur={() => setFocusedField(null)}
+                      isFocused={focusedField === "telegramLink"}
+                      hasError={Boolean(errors.telegramLink)}
+                      disabled={isViewMode}
+                      placeholder=" "
+                    />
+                  </Field>
+                </Grid>
+
+                <FullWidth>
+                  <Field>
+                    <FieldLabel isFocused={focusedField === "description"}>
+                      О себе
+                    </FieldLabel>
+
+                    <Textarea
+                      value={formData.description}
+                      onChange={(e) =>
+                        updateField("description", e.target.value)
+                      }
+                      onFocus={() => setFocusedField("description")}
+                      onBlur={() => setFocusedField(null)}
+                      isFocused={focusedField === "description"}
+                      disabled={isViewMode}
+                      placeholder=" "
+                    />
+                  </Field>
+                </FullWidth>
+
+                <FullWidth>
+                  <Field>
+                    <FieldLabel>Стек технологий</FieldLabel>
+
+                    <TagsBox disabled={isViewMode}>
+                      {formData.skills.map((skill) => (
+                        <TechTag key={skill}>
+                          #{skill}
+                          {isEditMode && (
+                            <RemoveTag
+                              type="button"
+                              onClick={() => removeSkill(skill)}
+                            >
+                              ×
+                            </RemoveTag>
+                          )}
+                        </TechTag>
+                      ))}
+                    </TagsBox>
+                  </Field>
+
+                  {isEditMode && (
+                    <Field style={{ marginTop: "20px" }}>
+                      <FieldLabel isFocused={focusedField === "skillInput"}>
+                        Технология
+                      </FieldLabel>
+
+                      <Input
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onFocus={() => setFocusedField("skillInput")}
+                        onBlur={() => setFocusedField(null)}
+                        isFocused={focusedField === "skillInput"}
+                        placeholder="Напишите технологию и нажмите Enter"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addSkill();
+                          }
+                        }}
+                      />
+                    </Field>
+                  )}
+                </FullWidth>
+
+                <ModalFooter>
+                  {isEditMode && (
+                    <>
+                      <CancelButton type="button" onClick={handleCancel}>
+                        {isCreateMode ? "Отменить" : "Удалить изменения"}
+                      </CancelButton>
+                      <SaveButton
+                        type="button"
+                        onClick={() => {
+                          console.log("click save button");
+                          handleSave();
+                        }}
+                      >
+                        Сохранить
+                      </SaveButton>
+                    </>
+                  )}
+                </ModalFooter>
+              </Form>
+            </>
           )}
         </ModalContainer>
       </Overlay>
@@ -419,6 +436,7 @@ const ModalContainer = styled.div`
   background: #ffffff;
   width: 60%;
   margin: 0 auto;
+  margin-bottom: 60px;
   padding: 24px 24px 32px;
 `;
 
@@ -649,7 +667,11 @@ const Select = styled.select<{ disabled?: boolean; hasError?: boolean }>`
   width: 100%;
   padding: 16px;
   border: ${(p) =>
-    p.disabled ? "1.5px solid #A2ACB0" : p.hasError ? "1.5px solid #ef4444" : "1.5px solid #A2ACB0"};
+    p.disabled
+      ? "1.5px solid #A2ACB0"
+      : p.hasError
+        ? "1.5px solid #ef4444"
+        : "1.5px solid #A2ACB0"};
   border-radius: 14px;
   background: #ffffff;
   color: #09090b;
