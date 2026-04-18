@@ -28,13 +28,14 @@ export const EventCardContainer = styled.div`
   max-width: 368px;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0px 32px 64px 0px #0000000a;
-  box-shadow: 0px 0px 2px 1px #00000005;
+  box-shadow:
+    0 32px 64px 0 rgba(0, 0, 0, 0.04),
+    0 0 2px 1px rgba(0, 0, 0, 0.02);
+  background: #fff;
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.2s;
   position: relative;
-  isolation: isolate;
   cursor: pointer;
 `;
 
