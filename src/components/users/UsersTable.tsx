@@ -8,7 +8,6 @@ export const TableWrapper = styled.div`
   border: 1px solid #aad3ff;
   border-radius: 12px;
   overflow: auto;
-  margin-top: 25px;
 `;
 
 export const StyledTable = styled.table`

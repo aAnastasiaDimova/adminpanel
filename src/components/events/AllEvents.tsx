@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useEvents } from "../../hooks/events/useEvents.ts";
 import { Loader } from "../loader";
 import { EventSection } from "./EventSection";
-import { PageContainer } from "../../styles/global";
+import { ContentWrapper, PageContainer } from "../../styles/global";
 import { HeaderPage } from "../HeaderPage";
 import { Pagination } from "../Pagination";
 import { EventsContainer } from "../../styles/styles.events";
@@ -58,28 +58,30 @@ const AllEvents = observer(() => {
         onClickFilter={() => setIsFilterOpen(true)}
         onClickAddModal={() => navigate("/events/create")}
       />
-      <TypeEventsContainer>
-        <TypesEvent>
-          {allTypes.map((type) => (
-            <TypeItem
-              key={type}
-              active={type === typeItems}
-              onClick={() => handleType(type)}
-            >
-              {type}
-            </TypeItem>
-          ))}
-        </TypesEvent>
-      </TypeEventsContainer>
-      <EventsContainer>
-        <EventSection events={eventsStore.filteredEvents} />
-      </EventsContainer>
-      <Pagination />
+      <ContentWrapper>
+        <TypeEventsContainer>
+          <TypesEvent>
+            {allTypes.map((type) => (
+              <TypeItem
+                key={type}
+                active={type === typeItems}
+                onClick={() => handleType(type)}
+              >
+                {type}
+              </TypeItem>
+            ))}
+          </TypesEvent>
+        </TypeEventsContainer>
+        <EventsContainer>
+          <EventSection events={eventsStore.filteredEvents} />
+        </EventsContainer>
+        <Pagination />
 
-      <FilterModalEvents
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-      />
+        <FilterModalEvents
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+        />
+      </ContentWrapper>
     </PageContainer>
   );
 });

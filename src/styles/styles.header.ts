@@ -10,13 +10,14 @@ export const HeaderWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 export const Controls = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
 `;
 
 export const SearchWrapper = styled.div`

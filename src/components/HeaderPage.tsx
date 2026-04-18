@@ -19,7 +19,7 @@ export const HeaderPage = ({
   return (
     <>
       <S.HeaderWrapper>
-        <div>
+        <div style={{ width: "1120px" }}>
           <S.Header>{title}</S.Header>
           <S.Controls>
             <S.SearchWrapper>

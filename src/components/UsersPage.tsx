@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PageContainer } from "../styles/global";
+import { ContentWrapper, PageContainer } from "../styles/global";
 import FilterModal from "./FilterModal";
 import { HeaderPage } from "./HeaderPage";
 
@@ -54,32 +54,34 @@ const UsersPage: React.FC = () => {
       {isLoading && <Loader />}
       {error && <div>{error}</div>}
 
-      {!isLoading && !error && (
-        <>
-          <UsersTable rows={currentRows} onRowClick={openDetailsModal} />
+      <ContentWrapper>
+        {!isLoading && !error && (
+          <>
+            <UsersTable rows={currentRows} onRowClick={openDetailsModal} />
 
-          <UsersPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </>
-      )}
-      <FilterModal
-        isOpen={isFilterOpen}
-        value={filters}
-        onClose={closeFilterModal}
-        onApply={applyFilters}
-      />
-      <StudentModal
-        isOpen={isUserModalOpen}
-        onClose={closeUserModal}
-        mode={modalMode}
-        studentId={selectedUserId}
-        onCreate={handleCreateUser}
-        onUpdate={handleUpdateUser}
-        onDelete={handleDeleteUser}
-      />
+            <UsersPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+        <FilterModal
+          isOpen={isFilterOpen}
+          value={filters}
+          onClose={closeFilterModal}
+          onApply={applyFilters}
+        />
+        <StudentModal
+          isOpen={isUserModalOpen}
+          onClose={closeUserModal}
+          mode={modalMode}
+          studentId={selectedUserId}
+          onCreate={handleCreateUser}
+          onUpdate={handleUpdateUser}
+          onDelete={handleDeleteUser}
+        />
+      </ContentWrapper>
     </PageContainer>
   );
 };

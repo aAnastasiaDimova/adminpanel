@@ -7,3 +7,8 @@ export const PageContainer = styled.div`
   padding: 15px 139px 0px 139px;
   font-family: Inter;
 `;
+
+export const ContentWrapper = styled.div`
+  max-width: 1120px;
+  min-height: 70dvh;
+`;
