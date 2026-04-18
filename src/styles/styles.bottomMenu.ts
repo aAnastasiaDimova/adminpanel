@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
 
 export const Bottom = styled.div`
+position: fixed;
+  bottom: 0;
   margin-top: 40px;
   margin-bottom: 22px;
   display: flex;
